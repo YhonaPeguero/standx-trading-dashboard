@@ -5,6 +5,7 @@ import { computeStats, cumulativeSeries, filterByRange } from './lib/stats';
 import { parseFiles } from './lib/parse';
 import { generateDemo } from './lib/standx';
 import { buildExport, buildSummary, triggerDownload } from './lib/export';
+import * as sound from './lib/sound';
 import TopBar from './components/TopBar';
 import EmptyState from './components/EmptyState';
 import LoadingState from './components/LoadingState';
@@ -27,7 +28,11 @@ export default function App({ defaultLang = 'es' }: Props) {
   const [errorType, setErrorType] = useState<ErrorType>('empty');
   const [progress, setProgress] = useState<LoadProgress>({ files: 0, rows: 0 });
   const [shareOpen, setShareOpen] = useState(false);
-  const [notice, setNotice] = useState<{ text: string; visible: boolean }>({ text: '', visible: false });
+  const [notice, setNotice] = useState<{ text: string; kind: 'success' | 'error'; visible: boolean }>({
+    text: '',
+    kind: 'success',
+    visible: false,
+  });
 
   const abortRef = useRef<AbortController | null>(null);
   const noticeTimer = useRef<number | undefined>(undefined);
@@ -45,9 +50,23 @@ export default function App({ defaultLang = 'es' }: Props) {
     };
   }, []);
 
-  const showNotice = useCallback((text: string) => {
+  // One soft tap for every interactive click, wired once at the document
+  // level instead of per-button. Target handlers run first (bubbling), so
+  // the TopBar mute toggle can silence this before it fires.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (el?.closest('button, a, [role="button"]')) sound.tap();
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, []);
+
+  const showNotice = useCallback((text: string, kind: 'success' | 'error' = 'success') => {
     window.clearTimeout(noticeTimer.current);
-    setNotice({ text, visible: true });
+    setNotice({ text, kind, visible: true });
+    if (kind === 'error') sound.error();
+    else sound.success();
     noticeTimer.current = window.setTimeout(() => setNotice((n) => ({ ...n, visible: false })), 2200);
   }, []);
 
@@ -204,7 +223,7 @@ export default function App({ defaultLang = 'es' }: Props) {
           />
         )}
 
-        {notice.visible && <Toast text={notice.text} />}
+        {notice.visible && <Toast text={notice.text} kind={notice.kind} />}
       </div>
     </div>
   );

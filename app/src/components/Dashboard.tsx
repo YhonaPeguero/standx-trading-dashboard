@@ -139,7 +139,13 @@ export default function Dashboard({ t, lang, trades, stats, meta, range, setRang
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
             <span style={label}>{t.cumPnl}</span>
           </div>
-          <CumulativeChart series={series} color={pnlColor} gradientId="pnlgrad" ariaLabel={`${t.cumPnl}: ${fmtUsd(stats.net, true)} ${dateRangeLabel}`} />
+          <CumulativeChart
+            key={range}
+            series={series}
+            color={pnlColor}
+            gradientId="pnlgrad"
+            ariaLabel={`${t.cumPnl}: ${fmtUsd(stats.net, true)} ${dateRangeLabel}`}
+          />
           <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--mono)', fontSize: 10.5, color: 'var(--text-4)', marginTop: 6 }}>
             <span>{stats.first ? fmtDate(stats.first, lang) : ''}</span>
             <span>{stats.last ? fmtDate(stats.last, lang) : ''}</span>
@@ -167,6 +173,7 @@ export default function Dashboard({ t, lang, trades, stats, meta, range, setRang
           <span style={label}>{t.winLossDist}</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginTop: 16 }}>
             <Donut
+              key={range}
               wins={stats.wins}
               count={stats.count}
               centerLabel={stats.winRate.toFixed(0) + '%'}
@@ -206,7 +213,7 @@ export default function Dashboard({ t, lang, trades, stats, meta, range, setRang
         {/* by market */}
         <div style={{ ...card, padding: '20px 22px' }}>
           <span style={label}>{t.markets}</span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 13, marginTop: 18 }}>
+          <div key={range} style={{ display: 'flex', flexDirection: 'column', gap: 13, marginTop: 18 }}>
             {markets.map((m) => {
               const mPos = m.pnl >= 0;
               return (

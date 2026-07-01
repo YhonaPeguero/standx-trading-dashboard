@@ -1,20 +1,21 @@
 interface Props {
   text: string;
+  kind?: 'success' | 'error';
 }
 
-export default function Toast({ text }: Props) {
+export default function Toast({ text, kind = 'success' }: Props) {
+  const err = kind === 'error';
   return (
     <div
-      className="fade-up"
+      className="toast-in"
       role="status"
       aria-live="polite"
       style={{
         position: 'fixed',
         bottom: 24,
         left: '50%',
-        transform: 'translateX(-50%)',
         background: '#101918',
-        border: '1px solid rgba(0,255,135,0.28)',
+        border: `1px solid ${err ? 'rgba(255,92,108,0.35)' : 'rgba(0,255,135,0.28)'}`,
         color: '#edf2ef',
         borderRadius: 11,
         padding: '11px 18px',
@@ -27,7 +28,7 @@ export default function Toast({ text }: Props) {
         zIndex: 50,
       }}
     >
-      <span style={{ color: '#00ff87' }}>✓</span>
+      <span style={{ color: err ? '#ff5c6c' : '#00ff87' }}>{err ? '✕' : '✓'}</span>
       {text}
     </div>
   );

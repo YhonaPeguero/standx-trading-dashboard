@@ -20,6 +20,7 @@ export default function Donut({ wins, count, centerLabel, caption, ariaLabel }: 
       <svg viewBox="0 0 200 200" aria-hidden="true" style={{ width: 130, height: 130, transform: 'rotate(-90deg)' }}>
         <circle cx="100" cy="100" r={R} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={SW} />
         <circle
+          className="donut-arc donut-arc-loss"
           cx="100"
           cy="100"
           r={R}
@@ -32,6 +33,7 @@ export default function Donut({ wins, count, centerLabel, caption, ariaLabel }: 
           strokeDashoffset={(-winLen).toFixed(1)}
         />
         <circle
+          className="donut-arc"
           cx="100"
           cy="100"
           r={R}

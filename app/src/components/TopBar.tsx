@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { Lang } from '../types';
 import type { Strings } from '../i18n';
+import { isMuted, setMuted } from '../lib/sound';
+import { IconVolume, IconVolumeOff } from './icons';
 import Mascot from './Mascot';
 
 interface Props {
@@ -25,6 +28,14 @@ const langPill = (active: boolean): CSSProperties => ({
 });
 
 export default function TopBar({ lang, onSetLang, showDisconnect, onReset, t }: Props) {
+  const [soundOff, setSoundOff] = useState(isMuted);
+  const toggleSound = () => {
+    // Flip the module flag *before* the document-level tap listener fires, so
+    // muting is silent and unmuting immediately demoes a blip.
+    setMuted(!soundOff);
+    setSoundOff(!soundOff);
+  };
+
   return (
     <header
       style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 4 }}
@@ -53,6 +64,17 @@ export default function TopBar({ lang, onSetLang, showDisconnect, onReset, t }: 
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <button
+          type="button"
+          className="tool-btn"
+          onClick={toggleSound}
+          aria-pressed={!soundOff}
+          aria-label={t.soundToggle}
+          title={t.soundToggle}
+          style={{ padding: 8 }}
+        >
+          {soundOff ? <IconVolumeOff size={15} /> : <IconVolume size={15} />}
+        </button>
         <div
           role="group"
           aria-label="Language / Idioma"

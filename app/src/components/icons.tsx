@@ -129,6 +129,21 @@ export const IconActivity = (p: Omit<IconProps, 'children'>) => (
   </Svg>
 );
 
+export const IconVolume = (p: Omit<IconProps, 'children'>) => (
+  <Svg {...p}>
+    <path d="M11 5 6 9H2v6h4l5 4z" />
+    <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+    <path d="M18.5 5.5a9.2 9.2 0 0 1 0 13" />
+  </Svg>
+);
+
+export const IconVolumeOff = (p: Omit<IconProps, 'children'>) => (
+  <Svg {...p}>
+    <path d="M11 5 6 9H2v6h4l5 4z" />
+    <path d="m22 9-6 6M16 9l6 6" />
+  </Svg>
+);
+
 export const IconAlertTriangle = (p: Omit<IconProps, 'children'>) => (
   <Svg {...p} width={p.width ?? 2.2}>
     <path d="M12 9v4M12 17h.01" />

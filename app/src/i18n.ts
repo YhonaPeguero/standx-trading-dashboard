@@ -17,6 +17,7 @@ export interface Strings {
   footerDisclaimerPre: string;
   footerDisclaimerMid: string;
   footerMadeBy: string;
+  soundToggle: string;
   loadingTitle: string;
   loadingSub: string;
   readingWord: string;
@@ -121,6 +122,7 @@ const es: Strings = {
   footerDisclaimerPre: 'Proyecto de la comunidad de',
   footerDisclaimerMid: '— no es un sitio web oficial.',
   footerMadeBy: 'Hecho por',
+  soundToggle: 'Sonidos de interfaz',
   loadingTitle: 'Analizando tus datos…',
   loadingSub: 'Reconstruyendo tus trades a partir de las ejecuciones. Es instantáneo y 100% local.',
   readingWord: 'Archivo',
@@ -234,6 +236,7 @@ const en: Strings = {
   footerDisclaimerPre: 'A',
   footerDisclaimerMid: 'community project — not an official website.',
   footerMadeBy: 'Made by',
+  soundToggle: 'Interface sounds',
   loadingTitle: 'Analyzing your data…',
   loadingSub: 'Reconstructing your trades from the raw fills. This is instant and fully local.',
   readingWord: 'File',

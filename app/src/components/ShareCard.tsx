@@ -15,7 +15,7 @@ interface Props {
   stats: Stats;
   series: number[];
   onClose: () => void;
-  onNotice: (msg: string) => void;
+  onNotice: (msg: string, kind?: 'success' | 'error') => void;
 }
 
 type FieldKey = 'winRate' | 'profitFactor' | 'trades' | 'best' | 'volume' | 'chart';
@@ -204,11 +204,11 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
   const pickBgFile = (file: File | undefined) => {
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      onNotice(t.bgInvalidFile);
+      onNotice(t.bgInvalidFile, 'error');
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      onNotice(t.bgTooLarge);
+      onNotice(t.bgTooLarge, 'error');
       return;
     }
     if (customBg) URL.revokeObjectURL(customBg.url);
@@ -225,7 +225,7 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
 
   const getCardNode = () => {
     const node = document.getElementById('share-card');
-    if (!node) onNotice(t.pngError);
+    if (!node) onNotice(t.pngError, 'error');
     return node;
   };
 
@@ -242,14 +242,14 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
         a.remove();
         onNotice(t.pngDownloaded);
       })
-      .catch(() => onNotice(t.pngError));
+      .catch(() => onNotice(t.pngError, 'error'));
   };
 
   const copyImage = () => {
     const node = getCardNode();
     if (!node) return;
     if (!navigator.clipboard || typeof window.ClipboardItem === 'undefined') {
-      onNotice(t.copyImageUnsupported);
+      onNotice(t.copyImageUnsupported, 'error');
       return;
     }
     // clipboard.write() must be called synchronously within the click's user-activation
@@ -263,7 +263,7 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
     navigator.clipboard
       .write([new window.ClipboardItem({ 'image/png': blobPromise })])
       .then(() => onNotice(t.imageCopied))
-      .catch(() => onNotice(t.pngError));
+      .catch(() => onNotice(t.pngError, 'error'));
   };
 
   const shareToX = () => {
@@ -288,7 +288,7 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
   const toggleStyle = (on: boolean): CSSProperties => ({
     background: on ? 'rgba(0,255,135,0.13)' : 'rgba(255,255,255,0.04)',
     border: `1px solid ${on ? 'rgba(0,255,135,0.35)' : 'rgba(255,255,255,0.1)'}`,
-    color: on ? '#00ff87' : '#6d7a73',
+    color: on ? '#00ff87' : '#7d8b84',
     borderRadius: 9,
     padding: '6px 11px',
     fontSize: 11.5,
@@ -331,6 +331,7 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
         aria-modal="true"
         aria-label={t.shareCard}
         onClick={(e) => e.stopPropagation()}
+        className="dialog-in"
         style={{ position: 'relative', width: 'min(94vw, 800px)', display: 'flex', flexDirection: 'column', gap: 22 }}
       >
         <div className="share-studio">
@@ -516,7 +517,7 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
                 </div>
 
                 {/* hero pnl */}
-                <div style={{ fontSize: 12.5, color: '#a6b3ac', fontWeight: 600, marginBottom: 5 }}>{t.netPnl}</div>
+                <div style={{ fontSize: 12.5, color: '#adbab3', fontWeight: 600, marginBottom: 5 }}>{t.netPnl}</div>
                 <div
                   style={{
                     fontFamily: 'var(--mono)',
@@ -547,7 +548,7 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
                           padding: '13px 14px',
                         }}
                       >
-                        <div style={{ fontSize: 11, color: '#6d7a73', fontWeight: 600, marginBottom: 6 }}>{cs.label}</div>
+                        <div style={{ fontSize: 11, color: '#7d8b84', fontWeight: 600, marginBottom: 6 }}>{cs.label}</div>
                         <div style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 700, color: cs.color }}>{cs.value}</div>
                       </div>
                     ))}
@@ -566,7 +567,7 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
                   }}
                 >
                   <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: accent, fontWeight: 600 }}>standx.com</span>
-                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10.5, color: '#6d7a73' }}>{dateRangeLabel}</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10.5, color: '#7d8b84' }}>{dateRangeLabel}</span>
                 </div>
               </div>
             </div>

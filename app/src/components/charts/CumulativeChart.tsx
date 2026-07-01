@@ -108,9 +108,11 @@ export default function CumulativeChart({ series, color, compact = false, gradie
             vectorEffect="non-scaling-stroke"
           />
         )}
-        <path d={area} fill={`url(#${gradientId})`} />
+        <path className="chart-area" d={area} fill={`url(#${gradientId})`} />
         <path
+          className="chart-line"
           d={line}
+          pathLength={1}
           fill="none"
           stroke={color}
           strokeWidth={compact ? 2.4 : 2.2}
@@ -122,6 +124,7 @@ export default function CumulativeChart({ series, color, compact = false, gradie
       {!compact && n > 0 && (
         <span
           aria-hidden="true"
+          className="chart-dot"
           style={{
             position: 'absolute',
             right: 0,
