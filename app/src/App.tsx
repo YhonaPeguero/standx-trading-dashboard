@@ -162,6 +162,7 @@ export default function App({ defaultLang = 'es' }: Props) {
 
   return (
     <div className="app">
+      <div className="app-aurora" aria-hidden="true" />
       <div className="shell">
         <TopBar lang={lang} onSetLang={setLang} showDisconnect={view === 'dashboard'} onReset={onReset} t={t} />
 

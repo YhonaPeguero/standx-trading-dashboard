@@ -254,26 +254,76 @@ a:focus-visible,
 
 /* ---------- app shell ---------- */
 /* Technical grid + edge vignette (the same language StandX's own community
-   hub uses for its background) layered under the brand-green corner glow. */
+   hub uses for its background) layered under the brand-green corner glow.
+   Two grid scales — a fine 42px mesh under a green "major" grid every 5th
+   line, with glowing nodes at the major intersections — give it blueprint
+   depth; the vignette keeps all of it quiet at the edges. */
 .app {
   position: relative;
   min-height: 100vh;
   background-color: var(--bg);
   background-image:
-    radial-gradient(1300px 720px at 85% -16%, rgba(0, 255, 135, 0.1), transparent 60%),
-    radial-gradient(900px 560px at -5% 8%, rgba(0, 255, 135, 0.03), transparent 55%),
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 42px 42px, 42px 42px;
-  background-position: 0 0, 0 0, center top, center top;
+    radial-gradient(1300px 720px at 85% -16%, rgba(0, 255, 135, 0.13), transparent 60%),
+    radial-gradient(900px 560px at -5% 8%, rgba(0, 255, 135, 0.055), transparent 55%),
+    radial-gradient(1000px 500px at 50% 112%, rgba(0, 255, 135, 0.045), transparent 60%),
+    radial-gradient(circle, rgba(0, 255, 135, 0.16) 1px, transparent 1.8px),
+    linear-gradient(rgba(0, 255, 135, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 135, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    210px 210px,
+    210px 210px,
+    210px 210px,
+    42px 42px,
+    42px 42px;
+  background-position:
+    0 0,
+    0 0,
+    0 0,
+    calc(50% + 105px) -105px,
+    center top,
+    center top,
+    center top,
+    center top;
   background-attachment: fixed;
+}
+/* a slow, barely-there drift of light so the scene feels alive */
+@keyframes auroraDrift {
+  from {
+    transform: translate3d(-3%, -2%, 0) scale(1);
+    opacity: 0.6;
+  }
+  to {
+    transform: translate3d(3%, 2.5%, 0) scale(1.12);
+    opacity: 1;
+  }
+}
+.app-aurora {
+  position: fixed;
+  inset: -15%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(46% 38% at 62% 22%, rgba(0, 255, 135, 0.06), transparent 68%);
+  animation: auroraDrift 26s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+/* the fixed-size glows cover proportionally more of a narrow viewport —
+   ease them off so mobile stays calm */
+@media (max-width: 560px) {
+  .app-aurora {
+    background: radial-gradient(46% 38% at 62% 22%, rgba(0, 255, 135, 0.035), transparent 68%);
+  }
 }
 .app::after {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse 80% 65% at 50% 20%, transparent 35%, var(--bg) 92%);
+  background: radial-gradient(ellipse 80% 65% at 50% 20%, transparent 32%, var(--bg) 88%);
   z-index: 0;
 }
 .app::before {
@@ -283,8 +333,8 @@ a:focus-visible,
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 135, 0.5), transparent);
-  opacity: 0.65;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 135, 0.55), transparent);
+  opacity: 0.75;
   pointer-events: none;
   z-index: 1;
 }
