@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulseDot { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  ::selection { background: rgba(63,221,147,0.3); }
+  input::placeholder { color: #5a5c66; }
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0a0b0e;color:#ECEAE4;font-family:'Hanken Grotesk',sans-serif;font-size:15px;line-height:1.5;background-image:radial-gradient(900px 500px at 85% -10%, rgba(63,221,147,0.06), transparent 60%);">
+  <div style="max-width:1180px;margin:0 auto;padding:22px 24px 64px;">
+
+    <!-- ===== TOP BAR ===== -->
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:11px;">
+        <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(145deg,#1c2a23,#0f1411);border:1px solid rgba(63,221,147,0.35);display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(63,221,147,0.18) inset;">
+          <div style="width:11px;height:11px;border-radius:3px;background:#3FDD93;box-shadow:0 0 10px rgba(63,221,147,0.8);"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;line-height:1.1;">
+          <span style="font-weight:800;letter-spacing:-0.02em;font-size:16px;">StandX</span>
+          <span style="font-size:11px;color:#82838c;font-weight:500;">{{ t.brandTag }}</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;background:#131419;border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:3px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;">
+          <button onClick="{{ setEs }}" style="{{ esBtnStyle }}">ES</button>
+          <button onClick="{{ setEn }}" style="{{ enBtnStyle }}">EN</button>
+        </div>
+        <sc-if value="{{ isDashboard }}">
+          <button onClick="{{ onReset }}" style="background:#131419;border:1px solid rgba(255,255,255,0.07);color:#b8b9c0;border-radius:9px;padding:8px 13px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;" style-hover="background:#1a1b21;color:#ECEAE4;">
+            <span style="width:7px;height:7px;border-radius:50%;background:#3FDD93;box-shadow:0 0 7px #3FDD93;"></span>{{ t.disconnect }}
+          </button>
+        </sc-if>
+      </div>
+    </div>
+
+    <!-- ===== EMPTY STATE ===== -->
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:54px 0 0;animation:fadeUp .5s ease both;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;color:#3FDD93;text-transform:uppercase;font-weight:600;margin-bottom:18px;">// perps.standx.com</div>
+        <h1 style="font-size:38px;line-height:1.08;font-weight:800;letter-spacing:-0.03em;margin:0 0 12px;max-width:620px;">{{ t.emptyTitle }}</h1>
+        <p style="font-size:16px;color:#9a9ba2;margin:0 0 32px;max-width:480px;">{{ t.emptySub }}</p>
+
+        <div style="width:100%;max-width:560px;background:#101116;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:24px;text-align:left;box-shadow:0 30px 80px -40px rgba(0,0,0,0.9);">
+          <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#b8b9c0;margin-bottom:9px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3FDD93" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            {{ t.tokenLabel }}
+          </label>
+          <div style="position:relative;">
+            <input type="password" value="{{ token }}" onInput="{{ onTokenInput }}" placeholder="{{ t.tokenPlaceholder }}" autocomplete="off" spellcheck="false" style="width:100%;background:#0a0b0e;border:1px solid {{ inputBorder }};border-radius:12px;padding:15px 16px;color:#ECEAE4;font-family:'JetBrains Mono',monospace;font-size:14px;outline:none;transition:border-color .15s;" />
+          </div>
+          <sc-if value="{{ inlineError }}">
+            <div style="color:#FB5E5E;font-size:12.5px;margin-top:8px;font-weight:500;">{{ t.tokenRequired }}</div>
+          </sc-if>
+
+          <button onClick="{{ onSubmit }}" style="width:100%;margin-top:14px;background:#3FDD93;color:#062014;border:none;border-radius:12px;padding:15px;font-family:inherit;font-size:15.5px;font-weight:700;cursor:pointer;letter-spacing:-0.01em;display:flex;align-items:center;justify-content:center;gap:9px;transition:filter .15s;" style-hover="filter:brightness(1.08);">
+            {{ t.cta }}
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#062014" stroke-width="2.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+
+          <div style="display:flex;gap:9px;align-items:flex-start;margin-top:16px;padding:12px 13px;background:rgba(63,221,147,0.05);border:1px solid rgba(63,221,147,0.16);border-radius:11px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3FDD93" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span style="font-size:12px;color:#9fb3a9;line-height:1.45;">{{ t.security }}</span>
+          </div>
+        </div>
+
+        <!-- collapsible guide -->
+        <div style="width:100%;max-width:560px;margin-top:14px;">
+          <button onClick="{{ toggleGuide }}" style="width:100%;background:#101116;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px 18px;color:#cdced3;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" style-hover="background:#15161c;">
+            <span style="display:flex;align-items:center;gap:9px;"><span style="font-family:'JetBrains Mono',monospace;color:#3FDD93;">?</span>{{ t.guideToggle }}</span>
+            <span style="transform:rotate({{ guideRot }});transition:transform .2s;color:#82838c;">▾</span>
+          </button>
+          <sc-if value="{{ guideOpen }}">
+            <div style="background:#0d0e12;border:1px solid rgba(255,255,255,0.06);border-top:none;border-radius:0 0 14px 14px;margin-top:-8px;padding:18px 18px 16px;text-align:left;animation:fadeUp .25s ease both;">
+              <sc-for list="{{ guideSteps }}" as="step" hint-placeholder-count="4">
+                <div style="display:flex;gap:12px;align-items:flex-start;padding:7px 0;">
+                  <span style="flex-shrink:0;width:22px;height:22px;border-radius:7px;background:#151620;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#3FDD93;">{{ step.n }}</span>
+                  <span style="font-size:13px;color:#a7a8af;line-height:1.5;">{{ step.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ===== LOADING STATE ===== -->
+    <sc-if value="{{ isLoading }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:96px 0;animation:fadeUp .4s ease both;">
+        <div style="position:relative;width:62px;height:62px;margin-bottom:26px;">
+          <div style="position:absolute;inset:0;border:3px solid rgba(63,221,147,0.14);border-radius:50%;"></div>
+          <div style="position:absolute;inset:0;border:3px solid transparent;border-top-color:#3FDD93;border-radius:50%;animation:spin .8s linear infinite;"></div>
+        </div>
+        <h2 style="font-size:22px;font-weight:700;margin:0 0 8px;letter-spacing:-0.02em;">{{ t.loadingTitle }}</h2>
+        <p style="color:#82838c;font-size:14px;margin:0 0 22px;max-width:380px;">{{ t.loadingSub }}</p>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#3FDD93;background:#0d0e12;border:1px solid rgba(63,221,147,0.16);border-radius:10px;padding:9px 16px;display:flex;align-items:center;gap:10px;">
+          <span style="display:flex;gap:3px;"><span style="width:5px;height:5px;border-radius:50%;background:#3FDD93;animation:pulseDot 1s infinite 0s;"></span><span style="width:5px;height:5px;border-radius:50%;background:#3FDD93;animation:pulseDot 1s infinite .2s;"></span><span style="width:5px;height:5px;border-radius:50%;background:#3FDD93;animation:pulseDot 1s infinite .4s;"></span></span>
+          {{ loadingProgress }}
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ===== ERROR STATE ===== -->
+    <sc-if value="{{ isError }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:90px 0;animation:fadeUp .4s ease both;">
+        <div style="width:60px;height:60px;border-radius:16px;background:{{ errIconBg }};border:1px solid {{ errIconBorder }};display:flex;align-items:center;justify-content:center;margin-bottom:22px;">
+          <span style="font-size:26px;">{{ errIcon }}</span>
+        </div>
+        <h2 style="font-size:23px;font-weight:700;margin:0 0 9px;letter-spacing:-0.02em;">{{ errTitle }}</h2>
+        <p style="color:#9a9ba2;font-size:14.5px;margin:0 0 24px;max-width:420px;">{{ errBody }}</p>
+        <button onClick="{{ onReset }}" style="background:#131419;border:1px solid rgba(255,255,255,0.1);color:#ECEAE4;border-radius:11px;padding:12px 22px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:#1a1b21;">{{ t.tryAgain }}</button>
+      </div>
+    </sc-if>
+
+    <!-- ===== DASHBOARD ===== -->
+    <sc-if value="{{ isDashboard }}">
+      <div style="animation:fadeUp .45s ease both;padding-top:14px;">
+
+        <!-- controls row -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <h2 style="font-size:19px;font-weight:700;margin:0;letter-spacing:-0.02em;">{{ t.overview }}</h2>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#82838c;background:#101116;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:4px 10px;">{{ dateRangeLabel }}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <div style="display:flex;background:#101116;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:3px;">
+              <sc-for list="{{ rangeChips }}" as="chip" hint-placeholder-count="4">
+                <button onClick="{{ chip.onClick }}" style="{{ chip.style }}">{{ chip.label }}</button>
+              </sc-for>
+            </div>
+            <button onClick="{{ openShare }}" style="background:rgba(63,221,147,0.13);border:1px solid rgba(63,221,147,0.38);color:#3FDD93;border-radius:10px;padding:8px 14px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;" style-hover="background:rgba(63,221,147,0.22);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>{{ t.shareCard }}
+            </button>
+            <button onClick="{{ downloadJson }}" style="background:#101116;border:1px solid rgba(255,255,255,0.08);color:#cdced3;border-radius:10px;padding:8px 13px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;" style-hover="background:#16171d;color:#ECEAE4;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 21h14"/></svg>{{ t.downloadJson }}
+            </button>
+            <button onClick="{{ copySummary }}" style="background:#101116;border:1px solid rgba(255,255,255,0.08);color:#cdced3;border-radius:10px;padding:8px 13px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;" style-hover="background:#16171d;color:#ECEAE4;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>{{ t.copySummary }}
+            </button>
+          </div>
+        </div>
+
+        <!-- HERO: net pnl + cumulative chart -->
+        <div style="display:grid;grid-template-columns:1fr 1.55fr;gap:14px;margin-bottom:14px;">
+          <div style="background:linear-gradient(160deg,#12150f,#0e0f13);border:1px solid {{ heroBorder }};border-radius:18px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12.5px;color:#9a9ba2;font-weight:600;">{{ t.netPnl }}</span>
+              <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:{{ pnlColor }};background:{{ pnlChipBg }};border-radius:6px;padding:2px 7px;font-weight:600;white-space:nowrap;flex-shrink:0;">{{ pnlSignTag }}</span>
+            </div>
+            <div style="margin-top:14px;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:40px;font-weight:700;letter-spacing:-0.03em;color:{{ pnlColor }};line-height:1;">{{ netPnlFmt }}</div>
+              <div style="font-size:12.5px;color:#82838c;margin-top:10px;">{{ t.netHelp }}</div>
+            </div>
+          </div>
+
+          <div style="background:#101116;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px 22px 14px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:12.5px;color:#9a9ba2;font-weight:600;">{{ t.cumPnl }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6c6e78;">{{ t.netPerTrade }}</span>
+            </div>
+            <svg viewBox="0 0 1000 260" preserveAspectRatio="none" style="width:100%;height:200px;display:block;overflow:visible;">
+              <defs>
+                <linearGradient id="pnlgrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="{{ pnlColor }}" stop-opacity="0.26"/>
+                  <stop offset="1" stop-color="{{ pnlColor }}" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <line x1="0" y1="{{ zeroY }}" x2="1000" y2="{{ zeroY }}" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 5" vector-effect="non-scaling-stroke"/>
+              <path d="{{ pnlAreaD }}" fill="url(#pnlgrad)"/>
+              <path d="{{ pnlPath }}" fill="none" stroke="{{ pnlColor }}" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+            </svg>
+            <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6c6e78;margin-top:4px;">
+              <span>{{ chartStartLabel }}</span><span>{{ chartEndLabel }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- METRIC CARDS -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;">
+          <sc-for list="{{ metricCards }}" as="m" hint-placeholder-count="4">
+            <div style="background:#101116;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:18px 19px;">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:11px;">
+                <span style="color:{{ m.iconColor }};display:flex;">{{ m.icon }}</span>
+                <span style="font-size:12px;color:#9a9ba2;font-weight:600;">{{ m.label }}</span>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;letter-spacing:-0.02em;color:{{ m.color }};line-height:1;">{{ m.value }}</div>
+              <div style="font-size:11.5px;color:#6c6e78;margin-top:7px;">{{ m.sub }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- DONUT + MONTHLY + WIN/LOSS -->
+        <div style="display:grid;grid-template-columns:1fr 1.7fr;gap:14px;margin-bottom:14px;">
+          <div style="background:#101116;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px 22px;">
+            <span style="font-size:12.5px;color:#9a9ba2;font-weight:600;">{{ t.winLossDist }}</span>
+            <div style="display:flex;align-items:center;gap:20px;margin-top:14px;">
+              <div style="position:relative;width:128px;height:128px;flex-shrink:0;">
+                <svg viewBox="0 0 200 200" style="width:128px;height:128px;transform:rotate(-90deg);">
+                  <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="22"/>
+                  <circle cx="100" cy="100" r="82" fill="none" stroke="#3FDD93" stroke-width="22" stroke-linecap="round" stroke-dasharray="{{ donutWinDash }}"/>
+                  <circle cx="100" cy="100" r="82" fill="none" stroke="#FB5E5E" stroke-width="22" stroke-linecap="round" stroke-dasharray="{{ donutLossDash }}" stroke-dashoffset="{{ donutLossOffset }}"/>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;letter-spacing:-0.02em;">{{ winRateFmt }}</span>
+                  <span style="font-size:10.5px;color:#82838c;">{{ t.winRate }}</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:13px;">
+                <div style="display:flex;flex-direction:column;gap:3px;">
+                  <span style="display:flex;align-items:center;gap:7px;font-size:12px;color:#9a9ba2;"><span style="width:9px;height:9px;border-radius:3px;background:#3FDD93;"></span>{{ t.wins }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;">{{ winsCount }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px;">
+                  <span style="display:flex;align-items:center;gap:7px;font-size:12px;color:#9a9ba2;"><span style="width:9px;height:9px;border-radius:3px;background:#FB5E5E;"></span>{{ t.losses }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;">{{ lossesCount }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#101116;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px 22px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:12.5px;color:#9a9ba2;font-weight:600;">{{ t.monthlyPnl }}</span>
+              <div style="display:flex;gap:13px;font-size:11px;color:#6c6e78;">
+                <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:#3FDD93;"></span>{{ t.gain }}</span>
+                <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:#FB5E5E;"></span>{{ t.loss }}</span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:stretch;gap:10px;height:158px;margin-top:16px;">
+              <sc-for list="{{ monthlyBars }}" as="b" hint-placeholder-count="6">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;">
+                  <div style="flex:1;width:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;">
+                    <span style="position:absolute;bottom:calc({{ b.barPct }} + 4px);font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#82838c;white-space:nowrap;">{{ b.valLabel }}</span>
+                    <div style="width:64%;max-width:34px;border-radius:5px 5px 0 0;background:{{ b.color }};height:{{ b.barPct }};transform-origin:bottom;animation:barGrow .5s ease both;"></div>
+                  </div>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6c6e78;margin-top:7px;">{{ b.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- BEST / WORST / STREAK / DUSD strip -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;">
+          <div style="background:#101116;border:1px solid rgba(63,221,147,0.18);border-radius:16px;padding:18px 19px;">
+            <span style="font-size:12px;color:#9a9ba2;font-weight:600;">{{ t.bestTrade }}</span>
+            <div style="display:flex;align-items:baseline;gap:9px;margin-top:9px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:21px;font-weight:700;color:#3FDD93;">{{ bestPnlFmt }}</span>
+              <span style="font-size:12px;color:#82838c;font-family:'JetBrains Mono',monospace;">{{ bestSym }}</span>
+            </div>
+          </div>
+          <div style="background:#101116;border:1px solid rgba(251,94,94,0.18);border-radius:16px;padding:18px 19px;">
+            <span style="font-size:12px;color:#9a9ba2;font-weight:600;">{{ t.worstTrade }}</span>
+            <div style="display:flex;align-items:baseline;gap:9px;margin-top:9px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:21px;font-weight:700;color:#FB5E5E;">{{ worstPnlFmt }}</span>
+              <span style="font-size:12px;color:#82838c;font-family:'JetBrains Mono',monospace;">{{ worstSym }}</span>
+            </div>
+          </div>
+          <div style="background:#101116;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:18px 19px;">
+            <span style="font-size:12px;color:#9a9ba2;font-weight:600;">{{ t.streak }}</span>
+            <div style="display:flex;align-items:baseline;gap:9px;margin-top:9px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:21px;font-weight:700;color:{{ streakColor }};">{{ streakCount }}</span>
+              <span style="font-size:12px;color:#82838c;">{{ streakLabel }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DUSD yield vs PnL -->
+        <div style="background:#101116;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px 22px;margin-bottom:14px;">
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;">
+            <span style="font-size:12.5px;color:#9a9ba2;font-weight:600;">{{ t.dusdVsPnl }}</span>
+            <span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#b89a5e;background:rgba(184,154,94,0.12);border:1px solid rgba(184,154,94,0.25);border-radius:6px;padding:2px 7px;font-weight:600;">{{ t.estimated }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12.5px;"><span style="color:#cdced3;">{{ t.dusdYield }}</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#3FDD93;">{{ dusdYieldFmt }}</span></div>
+              <div style="height:10px;background:#0a0b0e;border-radius:6px;overflow:hidden;"><div style="height:100%;width:{{ dusdBarPct }};background:linear-gradient(90deg,#2c7a55,#3FDD93);border-radius:6px;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12.5px;"><span style="color:#cdced3;">{{ t.tradingPnl }}</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:{{ pnlColor }};">{{ netPnlFmt }}</span></div>
+              <div style="height:10px;background:#0a0b0e;border-radius:6px;overflow:hidden;"><div style="height:100%;width:{{ pnlBarPct }};background:{{ pnlBarBg }};border-radius:6px;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECENT TRADES TABLE -->
+        <div style="background:#101116;border:1px solid rgba(255,255,255,0.07);border-radius:18px;overflow:hidden;">
+          <div style="padding:18px 22px 12px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13.5px;color:#ECEAE4;font-weight:700;">{{ t.recentTrades }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#6c6e78;">{{ tradesCountLabel }}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1.3fr 0.8fr 1fr 1fr 1fr 1.2fr;padding:9px 22px;font-size:11px;color:#6c6e78;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;border-top:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);">
+            <span>{{ t.colMarket }}</span><span>{{ t.colSide }}</span><span style="text-align:right;">{{ t.colSize }}</span><span style="text-align:right;">{{ t.colFee }}</span><span style="text-align:right;">{{ t.colPnl }}</span><span style="text-align:right;">{{ t.colDate }}</span>
+          </div>
+          <sc-for list="{{ recentTrades }}" as="r" hint-placeholder-count="8">
+            <div style="display:grid;grid-template-columns:1.3fr 0.8fr 1fr 1fr 1fr 1.2fr;padding:12px 22px;font-size:13px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.035);" style-hover="background:rgba(255,255,255,0.02);">
+              <span style="font-family:'JetBrains Mono',monospace;font-weight:600;color:#ECEAE4;">{{ r.symbol }}</span>
+              <span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;background:{{ r.sideBg }};color:{{ r.sideColor }};">{{ r.sideLabel }}</span></span>
+              <span style="font-family:'JetBrains Mono',monospace;text-align:right;color:#b8b9c0;">{{ r.sizeFmt }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;text-align:right;color:#82838c;">{{ r.feeFmt }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;text-align:right;font-weight:600;color:{{ r.pnlColor }};">{{ r.pnlFmt }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;text-align:right;color:#82838c;font-size:12px;">{{ r.dateFmt }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <p style="text-align:center;font-size:11.5px;color:#5a5c66;margin:22px 0 0;display:flex;align-items:center;justify-content:center;gap:7px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5a5c66" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          {{ t.footerSecurity }}
+        </p>
+      </div>
+    </sc-if>
+
+    <!-- ===== SHARE CARD MODAL ===== -->
+    <sc-if value="{{ shareOpen }}">
+      <div onClick="{{ closeShare }}" style="position:fixed;inset:0;background:rgba(5,6,8,0.84);backdrop-filter:blur(7px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:60;padding:30px 20px;overflow:auto;animation:fadeUp .25s ease both;">
+        <button onClick="{{ closeShare }}" aria-label="Cerrar" style="position:fixed;top:20px;right:22px;width:40px;height:40px;border-radius:50%;background:#16181e;border:1px solid rgba(255,255,255,0.13);color:#cdced3;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;" style-hover="background:#22242c;color:#fff;">✕</button>
+        <div onClick="{{ stopProp }}" style="display:flex;flex-direction:column;align-items:center;gap:18px;">
+
+          <div id="share-card" style="width:460px;background:#0b0d11;border:1px solid rgba(63,221,147,0.22);border-radius:24px;padding:30px 30px 24px;position:relative;overflow:hidden;background-image:radial-gradient(440px 280px at 90% -10%, rgba(63,221,147,0.16), transparent 60%);box-shadow:0 0 70px -22px rgba(63,221,147,0.45);">
+            <!-- card header -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:30px;height:30px;border-radius:9px;background:linear-gradient(145deg,#1c2a23,#0f1411);border:1px solid rgba(63,221,147,0.4);display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px rgba(63,221,147,0.25) inset;">
+                  <div style="width:10px;height:10px;border-radius:3px;background:#3FDD93;box-shadow:0 0 9px rgba(63,221,147,0.9);"></div>
+                </div>
+                <span style="font-weight:800;letter-spacing:-0.02em;font-size:16px;">Stand Stats</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#3FDD93;text-transform:uppercase;font-weight:600;background:rgba(63,221,147,0.08);border:1px solid rgba(63,221,147,0.2);border-radius:7px;padding:4px 9px;">StandX Perps</span>
+            </div>
+
+            <!-- handle -->
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+              <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(140deg,#3FDD93,#176b46);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;color:#062014;flex-shrink:0;box-shadow:0 0 20px -4px rgba(63,221,147,0.5);">{{ handleInitial }}</div>
+              <input value="{{ handle }}" onInput="{{ onHandleInput }}" placeholder="{{ t.handlePlaceholder }}" spellcheck="false" autocomplete="off" style="background:transparent;border:none;outline:none;color:#ECEAE4;font-family:'Hanken Grotesk',sans-serif;font-size:20px;font-weight:700;width:100%;padding:0;letter-spacing:-0.01em;" />
+            </div>
+
+            <!-- hero pnl -->
+            <div style="font-size:12.5px;color:#9a9ba2;font-weight:600;margin-bottom:5px;">{{ t.netPnl }}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:46px;font-weight:700;letter-spacing:-0.03em;color:{{ pnlColor }};line-height:1;text-shadow:0 0 36px {{ pnlGlow }};">{{ netPnlFmt }}</div>
+
+            <!-- sparkline -->
+            <sc-if value="{{ showChart }}">
+            <svg viewBox="0 0 1000 260" preserveAspectRatio="none" style="width:100%;height:76px;display:block;margin-top:16px;overflow:visible;">
+              <defs>
+                <linearGradient id="cardgrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="{{ pnlColor }}" stop-opacity="0.3"/>
+                  <stop offset="1" stop-color="{{ pnlColor }}" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="{{ pnlAreaD }}" fill="url(#cardgrad)"/>
+              <path d="{{ pnlPath }}" fill="none" stroke="{{ pnlColor }}" stroke-width="3" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+            </svg>
+            </sc-if>
+
+            <!-- stats row -->
+            <sc-if value="{{ hasCardStats }}">
+            <div style="{{ cardStatsStyle }}">
+              <sc-for list="{{ cardStats }}" as="cs" hint-placeholder-count="3">
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:13px;padding:13px 14px;">
+                  <div style="font-size:11px;color:#82838c;font-weight:600;margin-bottom:6px;">{{ cs.label }}</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:{{ cs.color }};">{{ cs.value }}</div>
+                </div>
+              </sc-for>
+            </div>
+            </sc-if>
+
+            <!-- card footer -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:15px;border-top:1px solid rgba(255,255,255,0.07);">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#3FDD93;font-weight:600;">perps.standx.com</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6c6e78;">{{ dateRangeLabel }}</span>
+            </div>
+          </div>
+
+          <!-- field toggles -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:9px;">
+            <span style="font-size:11.5px;color:#82838c;font-weight:600;">{{ t.cardShowLabel }}</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:480px;">
+              <sc-for list="{{ fieldToggles }}" as="f" hint-placeholder-count="5">
+                <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.dot }} {{ f.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- actions (not captured in the image) -->
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+            <button onClick="{{ downloadCard }}" style="background:#3FDD93;color:#062014;border:none;border-radius:11px;padding:11px 18px;font-family:'Hanken Grotesk',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;" style-hover="filter:brightness(1.08);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#062014" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 21h14"/></svg>{{ t.downloadPng }}
+            </button>
+            <button onClick="{{ shareToX }}" style="background:#16181e;color:#ECEAE4;border:1px solid rgba(255,255,255,0.12);border-radius:11px;padding:11px 18px;font-family:'Hanken Grotesk',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;" style-hover="background:#1d1f26;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#ECEAE4"><path d="M18.9 1.6h3.7l-8.1 9.2L24 22.4h-7.4l-5.8-7.6-6.6 7.6H.5l8.6-9.9L0 1.6h7.6l5.2 6.9zM17.6 20.2h2L6.5 3.7H4.3z"/></svg>{{ t.shareX }}
+            </button>
+            <button onClick="{{ closeShare }}" style="background:transparent;color:#9a9ba2;border:1px solid rgba(255,255,255,0.1);border-radius:11px;padding:11px 16px;font-family:'Hanken Grotesk',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;" style-hover="color:#ECEAE4;">{{ t.cardClose }}</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- TOAST -->
+    <sc-if value="{{ noticeVisible }}">
+      <div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#16181e;border:1px solid rgba(63,221,147,0.3);color:#ECEAE4;border-radius:11px;padding:11px 18px;font-size:13px;font-weight:600;box-shadow:0 16px 40px -12px rgba(0,0,0,0.8);display:flex;align-items:center;gap:9px;z-index:50;animation:fadeUp .25s ease both;">
+        <span style="color:#3FDD93;">✓</span>{{ noticeText }}
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:900},&quot;scenario&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;winning&quot;,&quot;mixed&quot;,&quot;losing&quot;],&quot;default&quot;:&quot;winning&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;defaultLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;es&quot;,&quot;en&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      lang: (props.defaultLang || 'es'),
+      view: 'empty',
+      token: '',
+      inlineError: false,
+      guideOpen: false,
+      allTrades: [],
+      range: 'all',
+      pagesLoaded: 0,
+      errorType: null,
+      noticeText: '',
+      noticeVisible: false,
+      shareOpen: false,
+      handle: '',
+      cardFields: { winRate: true, trades: true, best: true, fees: false, funding: false, chart: true },
+    };
+  }
+
+  componentWillUnmount() {
+    if (this._timer) clearInterval(this._timer);
+    if (this._noticeT) clearTimeout(this._noticeT);
+    this.setState = () => {};
+    this._token = null;
+  }
+
+  // ---------- strings ----------
+  strings(lang) {
+    const es = {
+      brandTag: 'Panel de trading', emptyTitle: 'Conecta tu cuenta de StandX',
+      emptySub: 'Pega tu token JWT para ver todas tus estadísticas de trading. Se consulta en vivo y nunca se guarda.',
+      tokenLabel: 'Token JWT', tokenPlaceholder: 'Pega tu Bearer token aquí…', cta: 'Ver mis datos',
+      tokenRequired: 'Pega tu token JWT para continuar.',
+      guideToggle: '¿Cómo saco mi token JWT?',
+      security: 'Tu token solo se usa para consultar tus datos en este momento. Nunca se guarda, ni se envía a ningún lado más que a StandX.',
+      loadingTitle: 'Consultando StandX…', loadingSub: 'Estamos paginando tu historial completo de trades y órdenes. Esto puede tomar unos segundos.',
+      disconnect: 'Desconectar', overview: 'Resumen', tryAgain: 'Volver a intentar',
+      netPnl: 'PnL realizado neto', netHelp: 'Neto después de fees y funding', cumPnl: 'PnL acumulado', netPerTrade: 'neto por trade',
+      winRate: 'Win rate', winLossDist: 'Distribución de wins / losses', wins: 'Ganadores', losses: 'Perdedores',
+      monthlyPnl: 'PnL por mes', gain: 'Ganancia', loss: 'Pérdida',
+      bestTrade: 'Mejor trade', worstTrade: 'Peor trade', streak: 'Racha actual',
+      winStreak: 'wins seguidos', lossStreak: 'losses seguidos',
+      dusdVsPnl: 'Yield DUSD vs PnL de trading', estimated: 'estimado', dusdYield: 'Yield DUSD', tradingPnl: 'PnL de trading',
+      recentTrades: 'Trades recientes', colMarket: 'Mercado', colSide: 'Lado', colSize: 'Tamaño', colFee: 'Fee', colPnl: 'PnL', colDate: 'Fecha',
+      downloadJson: 'Descargar JSON', copySummary: 'Copiar resumen', summaryCopied: 'Resumen copiado al portapapeles',
+      jsonDownloaded: 'JSON descargado', footerSecurity: 'Tu token nunca se guardó. Se descartó al terminar la consulta.',
+      shareCard: 'Compartir card', handlePlaceholder: '@tu_usuario', downloadPng: 'Descargar PNG', shareX: 'Compartir en X', cardClose: 'Cerrar', pngDownloaded: 'Imagen descargada', pngError: 'No se pudo generar la imagen', shareTextPnl: 'Mi PnL en StandX:', cardShowLabel: 'Mostrar en el card:', cardChartLabel: 'Gráfico',
+      metricFees: 'Fees totales', metricFunding: 'Funding total', metricTrades: 'Trades', metricRange: 'Periodo',
+      feesSub: 'comisiones pagadas', fundingSub: 'pagado / recibido', tradesSub: 'operaciones cerradas', rangeSub: 'días cubiertos',
+      errAuthTitle: 'Tu token expiró o está mal', errAuthBody: 'StandX devolvió 401. Saca tu Bearer token de nuevo desde el navegador e inténtalo otra vez.',
+      errEmptyTitle: 'No encontramos trades', errEmptyBody: 'Tu cuenta no tiene trades en este periodo, o el token corresponde a otra cuenta. Verifica e intenta de nuevo.',
+      ranges: { all: 'Todo', d30: '30D', d90: '90D', ytd: 'YTD' },
+      months: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+      pageWord: 'Página', tradesWord: 'trades',
+      guide: [
+        'En StandX, abre las herramientas de desarrollador con F12 (o clic derecho → Inspeccionar).',
+        'Ve a la pestaña "Network" y recarga la página de tu historial de trades.',
+        'Busca una request a query_trades o query_orders y ábrela.',
+        'En "Headers", copia el valor de Authorization después de "Bearer ". Ese es tu JWT.',
+      ],
+    };
+    const en = {
+      brandTag: 'Trading panel', emptyTitle: 'Connect your StandX account',
+      emptySub: 'Paste your JWT token to see your full trading stats. It is queried live and never stored.',
+      tokenLabel: 'JWT token', tokenPlaceholder: 'Paste your Bearer token here…', cta: 'View my stats',
+      tokenRequired: 'Paste your JWT token to continue.',
+      guideToggle: 'How do I get my JWT token?',
+      security: 'Your token is only used to query your data right now. It is never stored, and never sent anywhere except StandX.',
+      loadingTitle: 'Querying StandX…', loadingSub: 'Paginating your full trades and orders history. This may take a few seconds.',
+      disconnect: 'Disconnect', overview: 'Overview', tryAgain: 'Try again',
+      netPnl: 'Net realized PnL', netHelp: 'Net of fees and funding', cumPnl: 'Cumulative PnL', netPerTrade: 'net per trade',
+      winRate: 'Win rate', winLossDist: 'Win / loss distribution', wins: 'Winners', losses: 'Losers',
+      monthlyPnl: 'PnL by month', gain: 'Gain', loss: 'Loss',
+      bestTrade: 'Best trade', worstTrade: 'Worst trade', streak: 'Current streak',
+      winStreak: 'wins in a row', lossStreak: 'losses in a row',
+      dusdVsPnl: 'DUSD yield vs trading PnL', estimated: 'estimated', dusdYield: 'DUSD yield', tradingPnl: 'Trading PnL',
+      recentTrades: 'Recent trades', colMarket: 'Market', colSide: 'Side', colSize: 'Size', colFee: 'Fee', colPnl: 'PnL', colDate: 'Date',
+      downloadJson: 'Download JSON', copySummary: 'Copy summary', summaryCopied: 'Summary copied to clipboard',
+      jsonDownloaded: 'JSON downloaded', footerSecurity: 'Your token was never stored. It was discarded once the query finished.',
+      shareCard: 'Share card', handlePlaceholder: '@your_handle', downloadPng: 'Download PNG', shareX: 'Share on X', cardClose: 'Close', pngDownloaded: 'Image downloaded', pngError: 'Could not generate image', shareTextPnl: 'My StandX PnL:', cardShowLabel: 'Show on card:', cardChartLabel: 'Chart',
+      metricFees: 'Total fees', metricFunding: 'Total funding', metricTrades: 'Trades', metricRange: 'Period',
+      feesSub: 'commissions paid', fundingSub: 'paid / received', tradesSub: 'closed positions', rangeSub: 'days covered',
+      errAuthTitle: 'Your token expired or is invalid', errAuthBody: 'StandX returned 401. Grab your Bearer token again from the browser and try once more.',
+      errEmptyTitle: 'No trades found', errEmptyBody: 'Your account has no trades in this period, or the token belongs to another account. Check it and try again.',
+      ranges: { all: 'All', d30: '30D', d90: '90D', ytd: 'YTD' },
+      months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      pageWord: 'Page', tradesWord: 'trades',
+      guide: [
+        'On StandX, open developer tools with F12 (or right-click → Inspect).',
+        'Go to the "Network" tab and reload your trade-history page.',
+        'Find a request to query_trades or query_orders and open it.',
+        'Under "Headers", copy the Authorization value after "Bearer ". That is your JWT.',
+      ],
+    };
+    return lang === 'en' ? en : es;
+  }
+
+  // ---------- mock generation (simulates the script's fetch) ----------
+  generate() {
+    const scenario = this.props.scenario || 'winning';
+    const winP = scenario === 'losing' ? 0.40 : scenario === 'mixed' ? 0.50 : 0.60;
+    let s = 0x9e3779b9 ^ (scenario.length * 1013904223);
+    const rnd = () => { s |= 0; s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    const syms = [['BTC', 62000], ['ETH', 3100], ['SOL', 150], ['HYPE', 28], ['DOGE', 0.16], ['AVAX', 38], ['LINK', 18]];
+    const start = Date.parse('2025-10-01T00:00:00Z'), end = Date.parse('2026-03-17T23:59:59Z');
+    const count = 124, out = [];
+    for (let i = 0; i < count; i++) {
+      const frac = i / (count - 1);
+      const ts = start + frac * (end - start) + (rnd() - 0.5) * 36e5 * 20;
+      const [sym, px] = syms[Math.floor(rnd() * syms.length)];
+      const side = rnd() < 0.54 ? 'long' : 'short';
+      const size = Math.round(500 + rnd() * 14000);
+      const win = rnd() < winP;
+      const mag = size * (0.004 + rnd() * 0.05);
+      let pnl = win ? mag : -mag * (0.7 + rnd() * 0.85);
+      pnl = Math.round(pnl * 100) / 100;
+      const fee = Math.round(size * 0.00045 * 100) / 100;
+      const funding = Math.round((rnd() - 0.45) * size * 0.0006 * 100) / 100;
+      const entry = px * (1 + (rnd() - 0.5) * 0.04);
+      const exit = entry * (1 + (pnl > 0 ? 1 : -1) * rnd() * 0.03);
+      out.push({ id: 't' + (100000 + i), symbol: sym + '-PERP', side, size, entryPrice: Math.round(entry * 100) / 100, exitPrice: Math.round(exit * 100) / 100, pnl, fee, funding, closedAt: new Date(ts).toISOString() });
+    }
+    out.sort((a, b) => Date.parse(a.closedAt) - Date.parse(b.closedAt));
+    return out;
+  }
+
+  // ---------- formatting ----------
+  fmtUsd(n, sign) {
+    const neg = n < 0; const a = Math.abs(n);
+    const str = a.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const pre = sign ? (neg ? '-$' : '+$') : (neg ? '-$' : '$');
+    return pre + str;
+  }
+  fmtDate(iso, lang) {
+    const d = new Date(iso); const m = this.strings(lang).months[d.getUTCMonth()];
+    return d.getUTCDate() + ' ' + m + ' ' + String(d.getUTCFullYear()).slice(2);
+  }
+
+  // ---------- handlers ----------
+  onTokenInput = (e) => { this.setState({ token: e.target.value, inlineError: false }); };
+  setEs = () => this.setState({ lang: 'es' });
+  setEn = () => this.setState({ lang: 'en' });
+  toggleGuide = () => this.setState(s => ({ guideOpen: !s.guideOpen }));
+  setRange = (r) => this.setState({ range: r });
+
+  onSubmit = () => {
+    const token = this.state.token;
+    if (!token || !token.trim()) { this.setState({ inlineError: true }); return; }
+    const low = token.toLowerCase();
+    this.setState({ view: 'loading', pagesLoaded: 0, inlineError: false });
+    if (low.includes('expired') || low.includes('invalid')) {
+      this._timer = setTimeout(() => this.setState({ view: 'error', errorType: 'auth' }), 1500);
+      return;
+    }
+    const emptyCase = low.includes('empty');
+    let p = 0;
+    this._timer = setInterval(() => {
+      p++; this.setState({ pagesLoaded: p });
+      if (p >= 6) {
+        clearInterval(this._timer);
+        const trades = emptyCase ? [] : this.generate();
+        this.setState({ allTrades: trades, range: 'all', token: '', view: trades.length ? 'dashboard' : 'error', errorType: trades.length ? null : 'empty' });
+      }
+    }, 360);
+  };
+
+  onReset = () => {
+    if (this._timer) clearInterval(this._timer);
+    this.setState({ view: 'empty', token: '', allTrades: [], inlineError: false, errorType: null, range: 'all' });
+  };
+
+  toggleField = (k) => this.setState(s => ({ cardFields: { ...s.cardFields, [k]: !s.cardFields[k] } }));
+  openShare = () => this.setState({ shareOpen: true });
+  closeShare = () => this.setState({ shareOpen: false });
+  stopProp = (e) => { e.stopPropagation(); };
+  onHandleInput = (e) => {
+    let v = e.target.value.replace(/\s/g, '');
+    if (v && v[0] !== '@') v = '@' + v.replace(/@/g, '');
+    this.setState({ handle: v.slice(0, 22) });
+  };
+
+  downloadCard = () => {
+    const node = document.getElementById('share-card');
+    const lib = window.htmlToImage;
+    if (!node || !lib) { this.notice(this.strings(this.state.lang).pngError); return; }
+    lib.toPng(node, { pixelRatio: 2.5, cacheBust: true, backgroundColor: '#0b0d11' })
+      .then((url) => {
+        const a = document.createElement('a');
+        a.href = url; a.download = 'stand-stats.png';
+        document.body.appendChild(a); a.click(); a.remove();
+        this.notice(this.strings(this.state.lang).pngDownloaded);
+      })
+      .catch(() => this.notice(this.strings(this.state.lang).pngError));
+  };
+
+  shareToX = () => {
+    const st = this.computeStats(this.filtered());
+    const handle = (this.state.handle || '').trim();
+    const t = this.strings(this.state.lang);
+    const lead = handle ? handle + ' — ' : '';
+    const text = lead + t.shareTextPnl + ' ' + this.fmtUsd(st.net, true) + ' · ' + st.winRate.toFixed(0) + '% ' + t.winRate + ' (' + st.count + ' ' + t.tradesWord + ') 📈\n\nperps.standx.com';
+    window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank', 'noopener');
+  };
+
+  notice = (txt) => {
+    if (this._noticeT) clearTimeout(this._noticeT);
+    this.setState({ noticeText: txt, noticeVisible: true });
+    this._noticeT = setTimeout(() => this.setState({ noticeVisible: false }), 2200);
+  };
+
+  buildExport = () => {
+    const f = this.filtered();
+    const st = this.computeStats(f);
+    return {
+      generatedAt: new Date().toISOString(),
+      range: this.state.range,
+      stats: {
+        netRealizedPnl: st.net, grossPnl: st.gross, totalFees: st.fees, totalFunding: st.funding,
+        trades: st.count, winRatePct: st.winRate, wins: st.wins, losses: st.losses,
+        from: st.first, to: st.last, bestTrade: st.best, worstTrade: st.worst,
+      },
+      trades: f,
+    };
+  };
+
+  downloadJson = () => {
+    try {
+      const blob = new Blob([JSON.stringify(this.buildExport(), null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob); const a = document.createElement('a');
+      a.href = url; a.download = 'standx_stats.json'; document.body.appendChild(a); a.click();
+      a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+      this.notice(this.strings(this.state.lang).jsonDownloaded);
+    } catch (e) {}
+  };
+
+  copySummary = () => {
+    const t = this.strings(this.state.lang); const st = this.computeStats(this.filtered());
+    const lines = [
+      'StandX — ' + t.overview, '',
+      t.netPnl + ': ' + this.fmtUsd(st.net, true),
+      t.winRate + ': ' + st.winRate.toFixed(1) + '%  (' + st.wins + 'W / ' + st.losses + 'L)',
+      t.metricTrades + ': ' + st.count,
+      t.metricFees + ': ' + this.fmtUsd(st.fees, false),
+      t.metricFunding + ': ' + this.fmtUsd(st.funding, true),
+      t.bestTrade + ': ' + this.fmtUsd(st.best, true), t.worstTrade + ': ' + this.fmtUsd(st.worst, true),
+    ].join('\n');
+    if (navigator.clipboard) navigator.clipboard.writeText(lines).catch(() => {});
+    this.notice(t.summaryCopied);
+  };
+
+  // ---------- derived ----------
+  filtered() {
+    const all = this.state.allTrades; if (!all.length) return [];
+    const r = this.state.range; if (r === 'all') return all;
+    const end = Date.parse(all[all.length - 1].closedAt);
+    let from;
+    if (r === 'd30') from = end - 30 * 864e5;
+    else if (r === 'd90') from = end - 90 * 864e5;
+    else if (r === 'ytd') from = Date.UTC(new Date(end).getUTCFullYear(), 0, 1);
+    else from = -Infinity;
+    return all.filter(x => Date.parse(x.closedAt) >= from);
+  }
+
+  computeStats(f) {
+    if (!f.length) return { net: 0, gross: 0, fees: 0, funding: 0, count: 0, winRate: 0, wins: 0, losses: 0, first: null, last: null, best: 0, worst: 0, streak: 0, streakWin: true, dusd: 0 };
+    let gross = 0, fees = 0, funding = 0, wins = 0, best = -Infinity, worst = Infinity, notional = 0;
+    for (const x of f) {
+      gross += x.pnl; fees += x.fee; funding += x.funding; notional += x.size;
+      if (x.pnl > 0) wins++; if (x.pnl > best) best = x.pnl; if (x.pnl < worst) worst = x.pnl;
+    }
+    const losses = f.length - wins;
+    let streak = 0, streakWin = f[f.length - 1].pnl > 0;
+    for (let i = f.length - 1; i >= 0; i--) { const w = f[i].pnl > 0; if (w === streakWin) streak++; else break; }
+    return {
+      net: gross - fees + funding, gross, fees, funding, count: f.length,
+      winRate: (wins / f.length) * 100, wins, losses,
+      first: f[0].closedAt, last: f[f.length - 1].closedAt, best, worst, streak, streakWin,
+      dusd: notional * 0.00085,
+    };
+  }
+
+  icon(path) {
+    return React.createElement('svg', { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
+      path.map((d, i) => React.createElement('path', { key: i, d })));
+  }
+
+  renderVals() {
+    const { lang, view, token, inlineError, guideOpen } = this.state;
+    const t = this.strings(lang);
+    const GREEN = '#3FDD93', RED = '#FB5E5E', MUTE = '#9a9ba2';
+
+    const segActive = 'background:#3FDD93;color:#062014;border:none;border-radius:6px;padding:5px 11px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;';
+    const segIdle = 'background:transparent;color:#82838c;border:none;border-radius:6px;padding:5px 11px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;';
+
+    const base = {
+      t, token, inlineError, guideOpen,
+      isEmpty: view === 'empty', isLoading: view === 'loading', isDashboard: view === 'dashboard', isError: view === 'error',
+      setEs: this.setEs, setEn: this.setEn, toggleGuide: this.toggleGuide, onSubmit: this.onSubmit, onReset: this.onReset,
+      onTokenInput: this.onTokenInput, downloadJson: this.downloadJson, copySummary: this.copySummary,
+      esBtnStyle: lang === 'es' ? 'background:#22232b;color:#ECEAE4;border:none;border-radius:6px;padding:5px 11px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;' : 'background:transparent;color:#82838c;border:none;border-radius:6px;padding:5px 11px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;',
+      enBtnStyle: lang === 'en' ? 'background:#22232b;color:#ECEAE4;border:none;border-radius:6px;padding:5px 11px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;' : 'background:transparent;color:#82838c;border:none;border-radius:6px;padding:5px 11px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;',
+      inputBorder: inlineError ? '#FB5E5E' : 'rgba(255,255,255,0.1)',
+      guideRot: guideOpen ? '180deg' : '0deg',
+      guideSteps: t.guide.map((text, i) => ({ n: i + 1, text })),
+      loadingProgress: t.pageWord + ' ' + Math.min(this.state.pagesLoaded, 6) + ' · ' + (this.state.pagesLoaded * 200) + ' ' + t.tradesWord,
+      noticeVisible: this.state.noticeVisible, noticeText: this.state.noticeText,
+      shareOpen: this.state.shareOpen, handle: this.state.handle,
+      handleInitial: ((this.state.handle || '').replace(/@/g, '').trim()[0] || '◆').toUpperCase(),
+      openShare: this.openShare, closeShare: this.closeShare, stopProp: this.stopProp,
+      onHandleInput: this.onHandleInput, downloadCard: this.downloadCard, shareToX: this.shareToX,
+      showChart: false, hasCardStats: false, cardStats: [], cardStatsStyle: '', fieldToggles: [],
+    };
+
+    // error
+    if (view === 'error') {
+      const auth = this.state.errorType === 'auth';
+      Object.assign(base, {
+        errIcon: auth ? '⚠' : '○', errIconBg: auth ? 'rgba(251,94,94,0.1)' : 'rgba(255,255,255,0.04)',
+        errIconBorder: auth ? 'rgba(251,94,94,0.3)' : 'rgba(255,255,255,0.1)',
+        errTitle: auth ? t.errAuthTitle : t.errEmptyTitle, errBody: auth ? t.errAuthBody : t.errEmptyBody,
+      });
+    }
+
+    if (view !== 'dashboard') return base;
+
+    // ----- dashboard derived -----
+    const f = this.filtered();
+    const st = this.computeStats(f);
+    const pos = st.net >= 0;
+    const pnlColor = pos ? GREEN : RED;
+
+    // cumulative chart
+    const series = []; let run = 0;
+    for (const x of f) { run += (x.pnl - x.fee + x.funding); series.push(run); }
+    const n = series.length, W = 1000, H = 260, padT = 16, padB = 16;
+    const vals = series.concat([0]);
+    const minV = Math.min(...vals), maxV = Math.max(...vals), span = (maxV - minV) || 1;
+    const X = i => n > 1 ? (i / (n - 1)) * W : W / 2;
+    const Y = v => padT + (1 - (v - minV) / span) * (H - padT - padB);
+    let pnlPath = '', pnlAreaD = '';
+    series.forEach((v, i) => { pnlPath += (i ? ' L ' : 'M ') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1); });
+    if (n) pnlAreaD = pnlPath + ' L ' + W + ' ' + H + ' L 0 ' + H + ' Z';
+    const zeroY = Y(0).toFixed(1);
+
+    // donut
+    const C = 2 * Math.PI * 82;
+    const winFrac = st.count ? st.wins / st.count : 0;
+    const winLen = winFrac * C, lossLen = (1 - winFrac) * C;
+
+    // monthly
+    const mMap = {};
+    for (const x of f) { const d = new Date(x.closedAt); const k = d.getUTCFullYear() + '-' + d.getUTCMonth(); if (!mMap[k]) mMap[k] = { net: 0, mo: d.getUTCMonth(), yr: d.getUTCFullYear() }; mMap[k].net += (x.pnl - x.fee + x.funding); }
+    const months = Object.values(mMap).sort((a, b) => (a.yr - b.yr) || (a.mo - b.mo));
+    const maxAbs = Math.max(1, ...months.map(m => Math.abs(m.net)));
+    const monthlyBars = months.map(m => ({
+      label: t.months[m.mo], color: m.net >= 0 ? GREEN : RED,
+      barPct: (Math.max(Math.abs(m.net) / maxAbs, 0.05) * 80).toFixed(1) + '%',
+      valLabel: (m.net >= 0 ? '+$' : '-$') + (Math.abs(m.net) / 1000).toFixed(1) + 'k',
+    }));
+
+    // metric cards
+    const mk = (icon, iconColor, label, value, color, sub) => ({ icon, iconColor, label, value, color, sub });
+    const metricCards = [
+      mk(this.icon(['M3 17l6-6 4 4 8-8']), GREEN, t.winRate, st.winRate.toFixed(1) + '%', '#ECEAE4', st.wins + 'W / ' + st.losses + 'L'),
+      mk(this.icon(['M4 4v16M4 20h16', 'M8 16l4-6 4 3 4-7']), MUTE, t.metricTrades, String(st.count), '#ECEAE4', t.tradesSub),
+      mk(this.icon(['M12 1v22', 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6']), RED, t.metricFees, this.fmtUsd(st.fees, false), '#ECEAE4', t.feesSub),
+      mk(this.icon(['M12 2v20', 'M2 12h20', 'M5 5l14 14']), st.funding >= 0 ? GREEN : RED, t.metricFunding, this.fmtUsd(st.funding, true), st.funding >= 0 ? GREEN : RED, t.fundingSub),
+    ];
+
+    // recent trades
+    const recentTrades = f.slice().reverse().slice(0, 9).map(x => ({
+      symbol: x.symbol,
+      sideLabel: x.side === 'long' ? (lang === 'en' ? 'LONG' : 'LONG') : 'SHORT',
+      sideBg: x.side === 'long' ? 'rgba(63,221,147,0.12)' : 'rgba(251,94,94,0.12)',
+      sideColor: x.side === 'long' ? GREEN : RED,
+      sizeFmt: '$' + Math.round(x.size).toLocaleString('en-US'),
+      feeFmt: this.fmtUsd(x.fee, false), pnlFmt: this.fmtUsd(x.pnl, true),
+      pnlColor: x.pnl >= 0 ? GREEN : RED, dateFmt: this.fmtDate(x.closedAt, lang),
+    }));
+
+    const days = st.first ? Math.round((Date.parse(st.last) - Date.parse(st.first)) / 864e5) : 0;
+    const dusdBarMax = Math.max(st.dusd, Math.abs(st.net), 1);
+
+    const rangeChips = ['all', 'd30', 'd90', 'ytd'].map(r => ({
+      label: t.ranges[r === 'd30' ? 'd30' : r === 'd90' ? 'd90' : r],
+      style: this.state.range === r ? segActive : segIdle,
+      onClick: () => this.setRange(r),
+    }));
+
+    const cf = this.state.cardFields;
+    const allCardStats = [
+      { key: 'winRate', label: t.winRate, value: st.winRate.toFixed(1) + '%', color: GREEN },
+      { key: 'trades', label: t.metricTrades, value: String(st.count), color: '#ECEAE4' },
+      { key: 'best', label: t.bestTrade, value: this.fmtUsd(st.best, true), color: GREEN },
+      { key: 'fees', label: t.metricFees, value: this.fmtUsd(st.fees, false), color: '#ECEAE4' },
+      { key: 'funding', label: t.metricFunding, value: this.fmtUsd(st.funding, true), color: st.funding >= 0 ? GREEN : RED },
+    ];
+    const cardStats = allCardStats.filter(s => cf[s.key]);
+    const ncols = Math.min(Math.max(cardStats.length, 1), 3);
+    const fieldToggles = allCardStats.concat([{ key: 'chart', label: t.cardChartLabel }]).map(o => {
+      const on = !!cf[o.key];
+      return { label: o.label, dot: on ? '●' : '○', onClick: () => this.toggleField(o.key),
+        style: 'background:' + (on ? 'rgba(63,221,147,0.13)' : 'rgba(255,255,255,0.04)') + ';border:1px solid ' + (on ? 'rgba(63,221,147,0.35)' : 'rgba(255,255,255,0.1)') + ';color:' + (on ? '#3FDD93' : '#82838c') + ';border-radius:9px;padding:7px 12px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;' };
+    });
+
+    Object.assign(base, {
+      cardStats, hasCardStats: cardStats.length > 0, showChart: !!cf.chart, fieldToggles,
+      cardStatsStyle: 'display:grid;grid-template-columns:repeat(' + ncols + ',1fr);gap:10px;margin-top:20px;',
+      pnlColor, pnlChipBg: pos ? 'rgba(63,221,147,0.12)' : 'rgba(251,94,94,0.12)',
+      pnlSignTag: pos ? '▲ ' + t.gain : '▼ ' + t.loss,
+      heroBorder: pos ? 'rgba(63,221,147,0.25)' : 'rgba(251,94,94,0.25)',
+      netPnlFmt: this.fmtUsd(st.net, true),
+      pnlGlow: pos ? 'rgba(63,221,147,0.45)' : 'rgba(251,94,94,0.4)', cardTrades: String(st.count),
+      dateRangeLabel: st.first ? this.fmtDate(st.first, lang) + ' → ' + this.fmtDate(st.last, lang) : '',
+      chartStartLabel: st.first ? this.fmtDate(st.first, lang) : '',
+      chartEndLabel: st.last ? this.fmtDate(st.last, lang) : '',
+      pnlPath, pnlAreaD, zeroY,
+      metricCards,
+      donutWinDash: winLen.toFixed(1) + ' ' + C.toFixed(1),
+      donutLossDash: lossLen.toFixed(1) + ' ' + C.toFixed(1),
+      donutLossOffset: (-winLen).toFixed(1),
+      winRateFmt: st.winRate.toFixed(0) + '%', winsCount: String(st.wins), lossesCount: String(st.losses),
+      monthlyBars,
+      bestPnlFmt: this.fmtUsd(st.best, true), worstPnlFmt: this.fmtUsd(st.worst, true),
+      bestSym: (f.find(x => x.pnl === st.best) || {}).symbol || '',
+      worstSym: (f.find(x => x.pnl === st.worst) || {}).symbol || '',
+      streakCount: String(st.streak), streakColor: st.streakWin ? GREEN : RED,
+      streakLabel: st.streakWin ? t.winStreak : t.lossStreak,
+      dusdYieldFmt: this.fmtUsd(st.dusd, true), dusdBarPct: ((st.dusd / dusdBarMax) * 100).toFixed(1) + '%',
+      pnlBarPct: ((Math.abs(st.net) / dusdBarMax) * 100).toFixed(1) + '%', pnlBarBg: pos ? 'linear-gradient(90deg,#2c7a55,#3FDD93)' : 'linear-gradient(90deg,#7a2c2c,#FB5E5E)',
+      recentTrades, tradesCountLabel: f.length + ' ' + t.tradesWord,
+      rangeChips,
+    });
+    return base;
+  }
+}
+</script>
+</body>
+</html>
