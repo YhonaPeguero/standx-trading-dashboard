@@ -758,12 +758,12 @@ a:focus-visible,
 }
 
 /* ---------- empty-state layout ---------- */
-/* Mobile: single centered column (mascot → head → card → side).
-   ≥1080px: split — head+card on the left, mascot+privacy+guide+referral on
+/* Mobile: single centered column (mascot → head → card → referral → side).
+   ≥1080px: split — head+upload+referral on the left, mascot+privacy+guide on
    the right, so the wide shell's side space actually works. */
 .empty-grid {
   display: grid;
-  grid-template-areas: 'mascot' 'head' 'card' 'ref' 'side';
+  grid-template-areas: 'mascot' 'head' 'main' 'side';
   justify-items: center;
   text-align: center;
 }
@@ -776,8 +776,15 @@ a:focus-visible,
   flex-direction: column;
   align-items: center;
 }
+.eg-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  width: 100%;
+  max-width: 540px;
+}
 .eg-card {
-  grid-area: card;
   max-width: 540px;
 }
 .eg-side {
@@ -785,17 +792,14 @@ a:focus-visible,
   max-width: 540px;
 }
 .eg-ref {
-  grid-area: ref;
   width: 100%;
   max-width: 540px;
-  margin-top: 26px;
 }
 @media (min-width: 1080px) {
   .empty-grid {
     grid-template-areas:
       'head mascot'
-      'ref side'
-      'card side';
+      'main side';
     grid-template-columns: minmax(0, 1.1fr) 460px;
     column-gap: 56px;
     row-gap: 6px;
@@ -835,11 +839,11 @@ a:focus-visible,
   }
   .eg-ref {
     max-width: none;
-    /* sits between the chips row and the upload card — breathing room on
-       both sides without floating away */
-    margin-top: 0;
-    margin-bottom: 22px;
     align-self: start;
+  }
+  .eg-main {
+    max-width: none;
+    gap: 22px;
   }
   .eg-ref .referral-card {
     padding: 16px 20px;
@@ -861,7 +865,6 @@ a:focus-visible,
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 14px;
   padding: 13px 16px;
   border: 1px solid rgba(0, 255, 135, 0.22);
   border-radius: var(--r);

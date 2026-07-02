@@ -94,18 +94,19 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
         </div>
       </div>
 
-      <div
-        className="eg-card reveal card-glass"
-        style={{
-          width: '100%',
-          border: '1px solid var(--line)',
-          borderRadius: 'var(--r-xl)',
-          padding: 28,
-          textAlign: 'left',
-          boxShadow: '0 40px 90px -50px rgba(0,0,0,0.95)',
-          animationDelay: '0.15s',
-        }}
-      >
+      <div className="eg-main">
+        <div
+          className="eg-card reveal card-glass"
+          style={{
+            width: '100%',
+            border: '1px solid var(--line)',
+            borderRadius: 'var(--r-xl)',
+            padding: 28,
+            textAlign: 'left',
+            boxShadow: '0 40px 90px -50px rgba(0,0,0,0.95)',
+            animationDelay: '0.15s',
+          }}
+        >
         <div
           className={'dropzone' + (drag ? ' drag' : '')}
           role="button"
@@ -217,9 +218,24 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
             <IconArrowRight size={13} width={2.6} />
           </button>
         </div>
+        </div>
+
+        {/* friendly referral nudge — a secondary beat tied to the upload card */}
+        <div className="eg-ref reveal" style={{ animationDelay: '0.22s' }}>
+          <a className="referral-card" href="https://standx.com/referral?code=Yhona" target="_blank" rel="noopener noreferrer">
+            <Mascot pose="dance" size={34} />
+            <span className="referral-text">
+              <strong>{t.referralTitle}</strong>
+              <em>
+                {t.referralCta}
+                <IconExternalLink size={11} width={2.4} />
+              </em>
+            </span>
+          </a>
+        </div>
       </div>
 
-      {/* privacy + guide + referral (right column on wide screens) */}
+      {/* privacy + guide (right column on wide screens) */}
       <div className="eg-side reveal" style={{ width: '100%', marginTop: 34, animationDelay: '0.28s' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
           <div className="privacy-badge">
@@ -310,19 +326,6 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
         )}
       </div>
 
-      {/* friendly referral nudge — its own beat under the upload card */}
-      <div className="eg-ref reveal" style={{ animationDelay: '0.22s' }}>
-        <a className="referral-card" href="https://standx.com/referral?code=Yhona" target="_blank" rel="noopener noreferrer">
-          <Mascot pose="dance" size={34} />
-          <span className="referral-text">
-            <strong>{t.referralTitle}</strong>
-            <em>
-              {t.referralCta}
-              <IconExternalLink size={11} width={2.4} />
-            </em>
-          </span>
-        </a>
-      </div>
     </div>
   );
 }
