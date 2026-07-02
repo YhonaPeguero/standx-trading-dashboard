@@ -70,6 +70,9 @@ export default function App({ defaultLang = 'es' }: Props) {
     noticeTimer.current = window.setTimeout(() => setNotice((n) => ({ ...n, visible: false })), 2200);
   }, []);
 
+  const [dragOver, setDragOver] = useState(false);
+  const dragDepth = useRef(0);
+
   const onAddFiles = useCallback((incoming: File[]) => {
     setFiles((prev) => {
       const seen = new Set(prev.map((f) => `${f.name}|${f.size}|${f.lastModified}`));
@@ -91,8 +94,8 @@ export default function App({ defaultLang = 'es' }: Props) {
 
   const onClear = useCallback(() => setFiles([]), []);
 
-  const onAnalyze = useCallback(async () => {
-    if (!files.length) return;
+  const runAnalysis = useCallback(async (fileList: File[]) => {
+    if (!fileList.length) return;
     setProgress({ files: 0, rows: 0 });
     setView('loading');
 
@@ -101,7 +104,7 @@ export default function App({ defaultLang = 'es' }: Props) {
     abortRef.current = ac;
 
     try {
-      const result = await parseFiles(files, (p) => setProgress(p), ac.signal);
+      const result = await parseFiles(fileList, (p) => setProgress(p), ac.signal);
       if (ac.signal.aborted) return;
       if (result.trades.length) {
         setAllTrades(result.trades);
@@ -117,7 +120,64 @@ export default function App({ defaultLang = 'es' }: Props) {
       setErrorType('format');
       setView('error');
     }
-  }, [files]);
+  }, []);
+
+  const onAnalyze = useCallback(() => runAnalysis(files), [runAnalysis, files]);
+
+  // Frictionless import, empty view only: drop files anywhere in the window,
+  // or paste raw JSON straight from the clipboard (skips saving a file at all).
+  useEffect(() => {
+    if (view !== 'empty') {
+      dragDepth.current = 0;
+      setDragOver(false);
+      return;
+    }
+    const hasFiles = (e: DragEvent) => Array.from(e.dataTransfer?.types ?? []).includes('Files');
+    const onEnter = (e: DragEvent) => {
+      if (!hasFiles(e)) return;
+      dragDepth.current += 1;
+      setDragOver(true);
+    };
+    const onLeave = (e: DragEvent) => {
+      if (!hasFiles(e)) return;
+      dragDepth.current = Math.max(0, dragDepth.current - 1);
+      if (dragDepth.current === 0) setDragOver(false);
+    };
+    const onOver = (e: DragEvent) => {
+      if (hasFiles(e)) e.preventDefault();
+    };
+    const onDrop = (e: DragEvent) => {
+      if (!hasFiles(e)) return;
+      e.preventDefault();
+      dragDepth.current = 0;
+      setDragOver(false);
+      const dropped = Array.from(e.dataTransfer?.files ?? []);
+      if (dropped.length) onAddFiles(dropped);
+    };
+    const onPaste = (e: ClipboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && /^(input|textarea)$/i.test(target.tagName)) return;
+      const text = e.clipboardData?.getData('text')?.trim();
+      if (!text || !(text.startsWith('{') || text.startsWith('['))) return;
+      e.preventDefault();
+      const pasted = new File([text], 'pasted.json', { type: 'application/json' });
+      showNotice(t.pasteAnalyzing);
+      void runAnalysis([pasted]);
+    };
+
+    window.addEventListener('dragenter', onEnter);
+    window.addEventListener('dragleave', onLeave);
+    window.addEventListener('dragover', onOver);
+    window.addEventListener('drop', onDrop);
+    window.addEventListener('paste', onPaste);
+    return () => {
+      window.removeEventListener('dragenter', onEnter);
+      window.removeEventListener('dragleave', onLeave);
+      window.removeEventListener('dragover', onOver);
+      window.removeEventListener('drop', onDrop);
+      window.removeEventListener('paste', onPaste);
+    };
+  }, [view, onAddFiles, runAnalysis, showNotice, t.pasteAnalyzing]);
 
   const onTryDemo = useCallback(() => {
     abortRef.current?.abort();
@@ -209,7 +269,10 @@ export default function App({ defaultLang = 'es' }: Props) {
             <a href="https://x.com/RyuuDefi" target="_blank" rel="noopener noreferrer">
               Thisnotmeme
             </a>
-            .
+            {' · '}
+            <a href="https://github.com/YhonaPeguero/standx-trading-dashboard" target="_blank" rel="noopener noreferrer">
+              {t.footerSource}
+            </a>
           </span>
         </footer>
 
@@ -222,6 +285,15 @@ export default function App({ defaultLang = 'es' }: Props) {
             onClose={() => setShareOpen(false)}
             onNotice={showNotice}
           />
+        )}
+
+        {dragOver && view === 'empty' && (
+          <div className="drop-overlay" aria-hidden="true">
+            <div className="drop-overlay-frame">
+              <span style={{ fontSize: 21, fontWeight: 800, letterSpacing: '-0.02em' }}>{t.dropOverlayTitle}</span>
+              <span style={{ fontSize: 14, color: 'var(--text-2)' }}>{t.dropOverlaySub}</span>
+            </div>
+          </div>
         )}
 
         {notice.visible && <Toast text={notice.text} kind={notice.kind} />}

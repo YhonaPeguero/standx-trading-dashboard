@@ -6,6 +6,7 @@ import type { Strings } from '../i18n';
 import { C } from '../theme';
 import { fmtCompact, fmtDate, fmtRatio, fmtUsd } from '../lib/format';
 import CumulativeChart from './charts/CumulativeChart';
+import CornerBrackets from './CornerBrackets';
 import { IconCheck, IconDownload, IconImage, IconUpload, IconX } from './icons';
 import Mascot from './Mascot';
 
@@ -83,18 +84,6 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-function CornerBrackets({ color }: { color: string }) {
-  const base: CSSProperties = { position: 'absolute', width: 15, height: 15, opacity: 0.6, pointerEvents: 'none' };
-  return (
-    <>
-      <span style={{ ...base, top: 13, left: 13, borderTop: `2px solid ${color}`, borderLeft: `2px solid ${color}`, borderTopLeftRadius: 4 }} />
-      <span style={{ ...base, top: 13, right: 13, borderTop: `2px solid ${color}`, borderRight: `2px solid ${color}`, borderTopRightRadius: 4 }} />
-      <span style={{ ...base, bottom: 13, left: 13, borderBottom: `2px solid ${color}`, borderLeft: `2px solid ${color}`, borderBottomLeftRadius: 4 }} />
-      <span style={{ ...base, bottom: 13, right: 13, borderBottom: `2px solid ${color}`, borderRight: `2px solid ${color}`, borderBottomRightRadius: 4 }} />
-    </>
-  );
-}
-
 export default function ShareCard({ t, lang, stats, series, onClose, onNotice }: Props) {
   const pos = stats.net >= 0;
 
@@ -103,6 +92,8 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
   const [bgId, setBgId] = useState<BgPresetId>(pos ? 'emerald' : 'crimson');
   const [customBg, setCustomBg] = useState<{ url: string } | null>(null);
   const [showHint, setShowHint] = useState(true);
+  const [format, setFormat] = useState<'post' | 'story'>('post');
+  const isStory = format === 'story';
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const bgFileRef = useRef<HTMLInputElement>(null);
@@ -188,7 +179,7 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
     { key: 'volume', label: t.volume, value: fmtCompact(stats.volume), color: C.ink },
   ];
   const cardStats = allCardStats.filter((s) => fields[s.key]);
-  const ncols = Math.min(Math.max(cardStats.length, 1), 3);
+  const ncols = Math.min(Math.max(cardStats.length, 1), isStory ? 2 : 3);
 
   const toggles: { key: FieldKey; label: string }[] = [
     ...allCardStats.map((s) => ({ key: s.key, label: s.label })),
@@ -229,10 +220,13 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
     return node;
   };
 
+  // story targets ≥1080px wide (300 × 3.6); post stays at 2.5 (460 → 1150px)
+  const exportRatio = isStory ? 3.6 : 2.5;
+
   const downloadCard = () => {
     const node = getCardNode();
     if (!node) return;
-    toPng(node, { pixelRatio: 2.5, backgroundColor: '#0b1311' })
+    toPng(node, { pixelRatio: exportRatio, backgroundColor: '#0b1311' })
       .then((url) => {
         const a = document.createElement('a');
         a.href = url;
@@ -256,7 +250,7 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
     // window, so the pending blob is handed to ClipboardItem as a promise rather than
     // awaited first — awaiting toBlob() before calling write() loses the activation and
     // the browser silently rejects the write.
-    const blobPromise = toBlob(node, { pixelRatio: 2.5, backgroundColor: '#0b1311' }).then((blob) => {
+    const blobPromise = toBlob(node, { pixelRatio: exportRatio, backgroundColor: '#0b1311' }).then((blob) => {
       if (!blob) throw new Error('no blob');
       return blob;
     });
@@ -403,6 +397,18 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
             </div>
 
             <div>
+              <span className="ctrl-label">{t.formatLabel}</span>
+              <div style={{ display: 'flex', gap: 7 }}>
+                <button style={toggleStyle(!isStory)} onClick={() => setFormat('post')} aria-pressed={!isStory}>
+                  {t.formatPost}
+                </button>
+                <button style={toggleStyle(isStory)} onClick={() => setFormat('story')} aria-pressed={isStory}>
+                  {t.formatStory}
+                </button>
+              </div>
+            </div>
+
+            <div>
               <span className="ctrl-label">{t.cardShowLabel}</span>
               <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
                 {toggles.map((o) => {
@@ -431,7 +437,7 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
               />
 
               {/* handle hint — also lives outside #share-card so it never ends up in the export */}
-              {showHint && (
+              {showHint && !isStory && (
                 <div className="handle-hint" role="tooltip">
                   {t.handleHint}
                 </div>
@@ -442,11 +448,15 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
                 id="share-card"
                 className="share-card"
                 style={{
-                  width: 460,
+                  width: isStory ? 305 : 460,
+                  minHeight: isStory ? 542 : undefined,
+                  display: isStory ? 'flex' : undefined,
+                  flexDirection: isStory ? 'column' : undefined,
+                  justifyContent: isStory ? 'space-between' : undefined,
                   backgroundColor: '#0b1311',
                   border: `1px solid ${hexToRgba(accent, 0.24)}`,
-                  borderRadius: 24,
-                  padding: '30px 30px 24px',
+                  borderRadius: isStory ? 20 : 24,
+                  padding: isStory ? '26px 24px 20px' : '30px 30px 24px',
                   position: 'relative',
                   overflow: 'hidden',
                   boxShadow: `0 0 70px -22px ${hexToRgba(accent, 0.45)}`,
@@ -521,7 +531,7 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
                 <div
                   style={{
                     fontFamily: 'var(--mono)',
-                    fontSize: 46,
+                    fontSize: isStory ? 34 : 46,
                     fontWeight: 700,
                     letterSpacing: '-0.03em',
                     color: pnlColor,
@@ -533,7 +543,9 @@ export default function ShareCard({ t, lang, stats, series, onClose, onNotice }:
                 </div>
 
                 {/* sparkline */}
-                {fields.chart && <CumulativeChart series={series} color={pnlColor} compact gradientId="cardgrad" />}
+                {fields.chart && (
+                  <CumulativeChart series={series} color={pnlColor} compact heightPx={isStory ? 150 : undefined} gradientId="cardgrad" />
+                )}
 
                 {/* stats row */}
                 {cardStats.length > 0 && (

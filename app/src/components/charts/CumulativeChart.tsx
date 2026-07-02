@@ -3,6 +3,8 @@ interface Props {
   color: string;
   /** sparkline variant for the share card: shorter, no baseline/marker */
   compact?: boolean;
+  /** overrides the compact height (story-format share card) */
+  heightPx?: number;
   gradientId: string;
   ariaLabel?: string;
 }
@@ -61,7 +63,7 @@ function smoothPath(pts: { x: number; y: number }[]): string {
   return d;
 }
 
-export default function CumulativeChart({ series, color, compact = false, gradientId, ariaLabel }: Props) {
+export default function CumulativeChart({ series, color, compact = false, heightPx, gradientId, ariaLabel }: Props) {
   const n = series.length;
   const vals = series.concat([0]);
   const minV = Math.min(...vals);
@@ -77,7 +79,7 @@ export default function CumulativeChart({ series, color, compact = false, gradie
   const lastY = n ? Y(series[n - 1]) : H / 2;
   const endTopPct = (lastY / H) * 100;
 
-  const height = compact ? 70 : 210;
+  const height = heightPx ?? (compact ? 70 : 210);
 
   return (
     <div style={{ position: 'relative', width: '100%', height }}>

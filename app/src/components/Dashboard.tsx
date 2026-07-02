@@ -6,6 +6,7 @@ import { fmtCompact, fmtDate, fmtRatio, fmtUsd } from '../lib/format';
 import { cumulativeSeries, marketBuckets } from '../lib/stats';
 import { useCountUp } from '../hooks/useCountUp';
 import CumulativeChart from './charts/CumulativeChart';
+import CornerBrackets from './CornerBrackets';
 import Donut from './charts/Donut';
 import { IconCopy, IconDownload, IconShare, IconShield } from './icons';
 
@@ -22,8 +23,8 @@ interface Props {
   onCopySummary: () => void;
 }
 
+// background comes from .card-glass so backdrop-filter can do its thing
 const card: CSSProperties = {
-  background: 'var(--surface)',
   border: '1px solid var(--line)',
   borderRadius: 'var(--r-lg)',
 };
@@ -102,9 +103,10 @@ export default function Dashboard({ t, lang, trades, stats, meta, range, setRang
 
       {/* HERO BAND */}
       <div
-        className="grid-hero reveal"
-        style={{ ...card, display: 'grid', gridTemplateColumns: '0.92fr 1.5fr', gap: 26, padding: 26, marginBottom: 14, ...reveal(2) }}
+        className={'grid-hero reveal card-glass hero-band' + (pos ? '' : ' neg')}
+        style={{ ...card, position: 'relative', display: 'grid', gridTemplateColumns: '0.92fr 1.5fr', gap: 26, padding: 26, marginBottom: 14, ...reveal(2) }}
       >
+        <CornerBrackets color={pos ? 'rgba(0,255,135,0.45)' : 'rgba(255,92,108,0.45)'} />
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 18 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
             <span style={label}>{t.netPnl}</span>
@@ -123,7 +125,10 @@ export default function Dashboard({ t, lang, trades, stats, meta, range, setRang
             </span>
           </div>
           <div>
-            <div className="pnl-hero-value" style={{ fontFamily: 'var(--mono)', fontSize: 46, fontWeight: 700, letterSpacing: '-0.035em', color: pnlColor, lineHeight: 1 }}>
+            <div
+              className={'pnl-hero-value pnl-grad ' + (pos ? 'pos' : 'neg')}
+              style={{ fontFamily: 'var(--mono)', fontSize: 46, fontWeight: 700, letterSpacing: '-0.035em', lineHeight: 1 }}
+            >
               {fmtUsd(animatedNet, true)}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14 }}>
@@ -169,7 +174,7 @@ export default function Dashboard({ t, lang, trades, stats, meta, range, setRang
       {/* win/loss + by market */}
       <div className="grid-2 reveal" style={{ display: 'grid', gridTemplateColumns: '0.85fr 1.15fr', gap: 14, marginBottom: 14, ...reveal(4) }}>
         {/* win / loss + highlights */}
-        <div style={{ ...card, padding: '20px 22px' }}>
+        <div className="card-glass" style={{ ...card, padding: '20px 22px' }}>
           <span style={label}>{t.winLossDist}</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginTop: 16 }}>
             <Donut
@@ -211,7 +216,7 @@ export default function Dashboard({ t, lang, trades, stats, meta, range, setRang
         </div>
 
         {/* by market */}
-        <div style={{ ...card, padding: '20px 22px' }}>
+        <div className="card-glass" style={{ ...card, padding: '20px 22px' }}>
           <span style={label}>{t.markets}</span>
           <div key={range} style={{ display: 'flex', flexDirection: 'column', gap: 13, marginTop: 18 }}>
             {markets.map((m) => {
@@ -243,7 +248,7 @@ export default function Dashboard({ t, lang, trades, stats, meta, range, setRang
       </div>
 
       {/* recent trades */}
-      <div className="reveal" style={{ ...card, overflow: 'hidden', ...reveal(5) }}>
+      <div className="reveal card-glass" style={{ ...card, overflow: 'hidden', ...reveal(5) }}>
         <div style={{ padding: '18px 22px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontSize: 13.5, color: 'var(--text)', fontWeight: 700 }}>{t.recentTrades}</span>
           <span style={{ fontFamily: 'var(--mono)', fontSize: 11.5, color: 'var(--text-4)' }}>

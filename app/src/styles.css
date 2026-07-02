@@ -68,6 +68,18 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+/* film grain — kills gradient banding, adds tactile depth. Sits above
+   everything (pointer-events none); #share-card exports stay clean because
+   html-to-image only rasterizes that subtree. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 ::selection {
   background: rgba(0, 255, 135, 0.25);
 }
@@ -184,6 +196,55 @@ a:focus-visible,
 }
 .mascot-float {
   animation: mascotFloat 4.5s ease-in-out infinite;
+}
+@keyframes mascotHop {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  35% {
+    transform: translateY(-14px) scale(1.04, 0.96);
+  }
+  65% {
+    transform: translateY(0) scale(0.98, 1.02);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+/* defined after .mascot-pop so it wins the cascade when both are present */
+.mascot-hop {
+  animation: mascotHop 0.55s cubic-bezier(0.34, 1.4, 0.44, 1) both;
+}
+
+/* ---------- full-window drop overlay ---------- */
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+}
+.drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  background: rgba(3, 8, 6, 0.86);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: overlayIn 0.18s ease both;
+}
+.drop-overlay-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 56px 84px;
+  border: 2px dashed var(--pos);
+  border-radius: var(--r-xl);
+  background: rgba(0, 255, 135, 0.05);
+  box-shadow: 0 0 0 6px rgba(0, 255, 135, 0.08), 0 0 60px -10px rgba(0, 255, 135, 0.35);
 }
 
 /* ---------- chart entrances ---------- */
@@ -344,6 +405,51 @@ a:focus-visible,
   max-width: 1140px;
   margin: 0 auto;
   padding: 26px 24px 72px;
+}
+@media (min-width: 1280px) {
+  .shell {
+    max-width: 1240px;
+  }
+}
+
+/* ---------- glass surfaces ---------- */
+/* Translucent over the aurora/grid for real depth. NEVER on #share-card:
+   html-to-image can't rasterize backdrop-filter, exports would lose the bg. */
+.card-glass {
+  background: rgba(13, 22, 19, 0.58);
+  -webkit-backdrop-filter: blur(16px) saturate(1.25);
+  backdrop-filter: blur(16px) saturate(1.25);
+}
+
+/* ---------- hero band ---------- */
+.hero-band {
+  overflow: hidden;
+}
+.hero-band::before {
+  content: '';
+  position: absolute;
+  top: -55%;
+  left: -12%;
+  width: 58%;
+  height: 200%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(0, 255, 135, 0.09), transparent 72%);
+}
+.hero-band.neg::before {
+  background: radial-gradient(closest-side, rgba(255, 92, 108, 0.09), transparent 72%);
+}
+.pnl-grad {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.pnl-grad.pos {
+  background-image: linear-gradient(115deg, #00e67a 10%, #a4ffd4 48%, #00ff87 85%);
+  filter: drop-shadow(0 0 26px rgba(0, 255, 135, 0.35));
+}
+.pnl-grad.neg {
+  background-image: linear-gradient(115deg, #ff5c6c 10%, #ffc2c8 48%, #ff5c6c 85%);
+  filter: drop-shadow(0 0 26px rgba(255, 92, 108, 0.3));
 }
 
 /* ---------- surfaces ---------- */
@@ -616,7 +722,9 @@ a:focus-visible,
 .kpi-strip {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  background: var(--surface);
+  background: rgba(13, 22, 19, 0.58);
+  -webkit-backdrop-filter: blur(16px) saturate(1.25);
+  backdrop-filter: blur(16px) saturate(1.25);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   overflow: hidden;
@@ -650,6 +758,13 @@ a:focus-visible,
 }
 
 /* ---------- feature chips (empty state) ---------- */
+.feature-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  column-gap: 34px;
+  row-gap: 12px;
+}
 .feature-chip {
   display: inline-flex;
   align-items: center;
@@ -1081,6 +1196,18 @@ a:focus-visible,
   }
   .share-card {
     width: 100% !important;
+  }
+  /* keep the 3 chips on one line at 375px */
+  .feature-row {
+    column-gap: 12px;
+  }
+  .feature-chip {
+    font-size: 11px;
+    gap: 5px;
+  }
+  .feature-chip-icon {
+    width: 20px;
+    height: 20px;
   }
 }
 

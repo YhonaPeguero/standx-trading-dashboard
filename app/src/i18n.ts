@@ -17,7 +17,11 @@ export interface Strings {
   footerDisclaimerPre: string;
   footerDisclaimerMid: string;
   footerMadeBy: string;
+  footerSource: string;
   soundToggle: string;
+  dropOverlayTitle: string;
+  dropOverlaySub: string;
+  pasteAnalyzing: string;
   loadingTitle: string;
   loadingSub: string;
   readingWord: string;
@@ -82,6 +86,9 @@ export interface Strings {
   cardChartLabel: string;
   bgSectionLabel: string;
   bgUploadLabel: string;
+  formatLabel: string;
+  formatPost: string;
+  formatStory: string;
   bgInvalidFile: string;
   bgTooLarge: string;
   metricFees: string;
@@ -122,7 +129,11 @@ const es: Strings = {
   footerDisclaimerPre: 'Proyecto de la comunidad de',
   footerDisclaimerMid: '— no es un sitio web oficial.',
   footerMadeBy: 'Hecho por',
+  footerSource: 'Código abierto',
   soundToggle: 'Sonidos de interfaz',
+  dropOverlayTitle: 'Suelta tus archivos',
+  dropOverlaySub: 'para analizarlos al instante',
+  pasteAnalyzing: 'JSON pegado — analizando…',
   loadingTitle: 'Analizando tus datos…',
   loadingSub: 'Reconstruyendo tus trades a partir de las ejecuciones. Es instantáneo y 100% local.',
   readingWord: 'Archivo',
@@ -186,6 +197,9 @@ const es: Strings = {
   cardShowLabel: 'Estadísticas',
   cardChartLabel: 'Gráfico',
   bgSectionLabel: 'Fondo',
+  formatLabel: 'Formato',
+  formatPost: 'Post',
+  formatStory: 'Story 9:16',
   bgUploadLabel: 'Subir',
   bgInvalidFile: 'Ese archivo no es una imagen',
   bgTooLarge: 'Máximo 10MB',
@@ -236,7 +250,11 @@ const en: Strings = {
   footerDisclaimerPre: 'A',
   footerDisclaimerMid: 'community project — not an official website.',
   footerMadeBy: 'Made by',
+  footerSource: 'Open source',
   soundToggle: 'Interface sounds',
+  dropOverlayTitle: 'Drop your files',
+  dropOverlaySub: 'to analyze them instantly',
+  pasteAnalyzing: 'JSON pasted — analyzing…',
   loadingTitle: 'Analyzing your data…',
   loadingSub: 'Reconstructing your trades from the raw fills. This is instant and fully local.',
   readingWord: 'File',
@@ -300,6 +318,9 @@ const en: Strings = {
   cardShowLabel: 'Stats',
   cardChartLabel: 'Chart',
   bgSectionLabel: 'Background',
+  formatLabel: 'Format',
+  formatPost: 'Post',
+  formatStory: 'Story 9:16',
   bgUploadLabel: 'Upload',
   bgInvalidFile: "That file isn't an image",
   bgTooLarge: 'Max 10MB',

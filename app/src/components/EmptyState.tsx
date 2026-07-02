@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { DragEvent } from 'react';
 import type { Strings } from '../i18n';
 import { ACCEPT } from '../lib/parse';
@@ -26,7 +26,20 @@ function formatBytes(n: number): string {
 export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear, onAnalyze, onTryDemo }: Props) {
   const [guideOpen, setGuideOpen] = useState(() => window.innerWidth > 560);
   const [drag, setDrag] = useState(false);
+  const [cheer, setCheer] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const prevCount = useRef(files.length);
+
+  // the mascot celebrates when files arrive (drop, picker or window-drop)
+  useEffect(() => {
+    if (files.length > prevCount.current) {
+      setCheer(true);
+      const timer = window.setTimeout(() => setCheer(false), 1200);
+      prevCount.current = files.length;
+      return () => window.clearTimeout(timer);
+    }
+    prevCount.current = files.length;
+  }, [files.length]);
 
   const openPicker = () => inputRef.current?.click();
   const onDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -39,7 +52,7 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '28px 0 0' }}>
-      <Mascot pose="happy" size={116} pop float style={{ marginBottom: 6 }} />
+      <Mascot pose={cheer ? 'hype' : 'happy'} size={116} pop float className={cheer ? 'mascot-hop' : undefined} style={{ marginBottom: 6 }} />
       <div
         className="reveal"
         style={{
@@ -62,7 +75,7 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
       </h1>
 
       {/* what you'll get */}
-      <div className="reveal" style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', columnGap: 34, rowGap: 12, marginBottom: 34, animationDelay: '0.1s' }}>
+      <div className="reveal feature-row" style={{ marginBottom: 34, animationDelay: '0.1s' }}>
         {t.features.map((label, i) => {
           const Icon = featureIcons[i];
           return (
@@ -77,11 +90,10 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
       </div>
 
       <div
-        className="reveal"
+        className="reveal card-glass"
         style={{
           width: '100%',
           maxWidth: 540,
-          background: 'var(--surface)',
           border: '1px solid var(--line)',
           borderRadius: 'var(--r-xl)',
           padding: 28,
