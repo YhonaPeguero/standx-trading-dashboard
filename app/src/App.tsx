@@ -269,10 +269,7 @@ export default function App({ defaultLang = 'es' }: Props) {
             <a href="https://x.com/RyuuDefi" target="_blank" rel="noopener noreferrer">
               Thisnotmeme
             </a>
-            {' · '}
-            <a href="https://github.com/YhonaPeguero/standx-trading-dashboard" target="_blank" rel="noopener noreferrer">
-              {t.footerSource}
-            </a>
+            .
           </span>
         </footer>
 

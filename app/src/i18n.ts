@@ -17,7 +17,6 @@ export interface Strings {
   footerDisclaimerPre: string;
   footerDisclaimerMid: string;
   footerMadeBy: string;
-  footerSource: string;
   soundToggle: string;
   dropOverlayTitle: string;
   dropOverlaySub: string;
@@ -131,7 +130,6 @@ const es: Strings = {
   footerDisclaimerPre: 'Proyecto de la comunidad de',
   footerDisclaimerMid: '— no es un sitio web oficial.',
   footerMadeBy: 'Hecho por',
-  footerSource: 'Código abierto',
   soundToggle: 'Sonidos de interfaz',
   dropOverlayTitle: 'Suelta tus archivos',
   dropOverlaySub: 'para analizarlos al instante',
@@ -254,7 +252,6 @@ const en: Strings = {
   footerDisclaimerPre: 'A',
   footerDisclaimerMid: 'community project — not an official website.',
   footerMadeBy: 'Made by',
-  footerSource: 'Open source',
   soundToggle: 'Interface sounds',
   dropOverlayTitle: 'Drop your files',
   dropOverlaySub: 'to analyze them instantly',

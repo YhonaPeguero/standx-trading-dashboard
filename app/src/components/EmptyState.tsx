@@ -308,15 +308,12 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
             </div>
           </div>
         )}
+      </div>
 
-        {/* friendly referral nudge */}
-        <a
-          className="referral-card"
-          href="https://standx.com/referral?code=Yhona"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Mascot pose="dance" size={30} />
+      {/* friendly referral nudge — its own beat under the upload card */}
+      <div className="eg-ref reveal" style={{ animationDelay: '0.22s' }}>
+        <a className="referral-card" href="https://standx.com/referral?code=Yhona" target="_blank" rel="noopener noreferrer">
+          <Mascot pose="dance" size={34} />
           <span className="referral-text">
             <strong>{t.referralTitle}</strong>
             <em>

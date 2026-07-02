@@ -25,8 +25,11 @@ export interface ParseResult {
   skipped: string[];
 }
 
-/** Pull an array of records out of whatever JSON envelope StandX returns. */
-function extractRows(body: unknown): RawRecord[] {
+/** Pull an array of records out of whatever JSON envelope StandX returns.
+ *  Depth-capped so a maliciously deep-nested document can't blow the stack —
+ *  real envelopes are 1-2 levels. */
+function extractRows(body: unknown, depth = 0): RawRecord[] {
+  if (depth > 6) return [];
   if (Array.isArray(body)) return body as RawRecord[];
   if (body && typeof body === 'object') {
     const o = body as Record<string, unknown>;
@@ -34,7 +37,7 @@ function extractRows(body: unknown): RawRecord[] {
       const v = o[key];
       if (Array.isArray(v)) return v as RawRecord[];
       if (v && typeof v === 'object') {
-        const inner = extractRows(v);
+        const inner = extractRows(v, depth + 1);
         if (inner.length) return inner;
       }
     }

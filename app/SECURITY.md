@@ -1,5 +1,9 @@
 # Security model
 
+Last deep review: **2026-07-02** (all sinks grepped, parser fuzz-hardened,
+`npm audit --omit=dev` = 0, end-to-end accuracy re-validated against real
+exports).
+
 This dashboard is a **fully client-side** single-page app. There is no backend,
 no database, no login, and **no API calls to any data endpoint**. You upload the
 `.txt` / `.json` / `.csv` files you exported from StandX, and they are parsed
@@ -27,16 +31,25 @@ entirely in your browser.
 
 ## Untrusted-input handling (parsing)
 
-Uploaded files are untrusted input, so the parser is defensive:
+Uploaded files — and the newer import paths, **paste (Ctrl+V)** and
+**window-wide drag & drop**, which feed the exact same pipeline — are untrusted
+input, so the parser is defensive:
 
 - Parsed with `JSON.parse` / a hand-rolled CSV reader only — **never** `eval` or
   `Function`.
 - Caps against pathological uploads: **25 MB/file**, **50 files**,
-  **200,000 records** max.
+  **500,000 records** max. Pasted text becomes an in-memory `File` and goes
+  through the same caps.
+- Envelope extraction is **depth-capped (6 levels)** so a maliciously
+  deep-nested JSON document can't blow the call stack.
 - Records are normalized by reading known fields only (no object spreading of
-  attacker-controlled keys), so there is no prototype-pollution path.
+  attacker-controlled keys), so there is no prototype-pollution path. JSON
+  `"__proto__"` keys parse as plain own-properties and key normalization strips
+  underscores anyway.
 - All parsed values are rendered by React as text and auto-escaped — symbols,
-  dates, etc. cannot inject markup.
+  dates, etc. cannot inject markup. The share-card's custom background is a
+  browser-minted `blob:` object URL (never a user-controlled string), revoked
+  on replace/close.
 
 ## Content-Security-Policy
 
@@ -49,8 +62,15 @@ The production build injects a tight CSP (see [`vite.config.ts`](vite.config.ts)
   anti-clickjacking and base-tag hijacking.
 
 The CSP is intentionally not applied to the Vite dev server (it would break
-HMR's inline preamble). In production, also set it as a real response header at
-your host/CDN for defense in depth.
+HMR's inline preamble).
+
+In production the same policy **is** sent as a real response header via
+[`vercel.json`](vercel.json), together with `X-Content-Type-Options: nosniff`,
+`X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`,
+`Permissions-Policy` (camera/mic/geo/payment/usb all off) and
+`Cross-Origin-Opener-Policy: same-origin`. This matters because
+`frame-ancestors` (anti-clickjacking) is ignored inside a `<meta>` tag — it
+only works as a header.
 
 ## Review against OWASP (web app + API)
 

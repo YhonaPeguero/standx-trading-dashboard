@@ -763,7 +763,7 @@ a:focus-visible,
    the right, so the wide shell's side space actually works. */
 .empty-grid {
   display: grid;
-  grid-template-areas: 'mascot' 'head' 'card' 'side';
+  grid-template-areas: 'mascot' 'head' 'card' 'ref' 'side';
   justify-items: center;
   text-align: center;
 }
@@ -784,11 +784,18 @@ a:focus-visible,
   grid-area: side;
   max-width: 540px;
 }
+.eg-ref {
+  grid-area: ref;
+  width: 100%;
+  max-width: 540px;
+  margin-top: 26px;
+}
 @media (min-width: 1080px) {
   .empty-grid {
     grid-template-areas:
       'head mascot'
-      'card side';
+      'card side'
+      'ref side';
     grid-template-columns: minmax(0, 1.1fr) 460px;
     column-gap: 56px;
     row-gap: 6px;
@@ -824,6 +831,21 @@ a:focus-visible,
   .eg-side {
     max-width: none;
     margin-top: 10px !important;
+    align-self: start;
+  }
+  .eg-ref {
+    max-width: none;
+    margin-top: 30px;
+    align-self: start;
+  }
+  .eg-ref .referral-card {
+    padding: 16px 20px;
+  }
+  .eg-ref .referral-text strong {
+    font-size: 14px;
+  }
+  .eg-ref .referral-text em {
+    font-size: 13.5px;
   }
   .eg-side .privacy-badge {
     width: 100%;
