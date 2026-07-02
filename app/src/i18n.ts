@@ -22,6 +22,8 @@ export interface Strings {
   dropOverlayTitle: string;
   dropOverlaySub: string;
   pasteAnalyzing: string;
+  referralTitle: string;
+  referralCta: string;
   loadingTitle: string;
   loadingSub: string;
   readingWord: string;
@@ -134,6 +136,8 @@ const es: Strings = {
   dropOverlayTitle: 'Suelta tus archivos',
   dropOverlaySub: 'para analizarlos al instante',
   pasteAnalyzing: 'JSON pegado — analizando…',
+  referralTitle: '¿Aún no operas en StandX?',
+  referralCta: 'Únete con mi código de referido',
   loadingTitle: 'Analizando tus datos…',
   loadingSub: 'Reconstruyendo tus trades a partir de las ejecuciones. Es instantáneo y 100% local.',
   readingWord: 'Archivo',
@@ -255,6 +259,8 @@ const en: Strings = {
   dropOverlayTitle: 'Drop your files',
   dropOverlaySub: 'to analyze them instantly',
   pasteAnalyzing: 'JSON pasted — analyzing…',
+  referralTitle: 'Not trading on StandX yet?',
+  referralCta: 'Join with my referral code',
   loadingTitle: 'Analyzing your data…',
   loadingSub: 'Reconstructing your trades from the raw fills. This is instant and fully local.',
   readingWord: 'File',

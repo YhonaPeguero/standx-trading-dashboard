@@ -51,49 +51,53 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
   const hasFiles = files.length > 0;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '28px 0 0' }}>
-      <Mascot pose={cheer ? 'hype' : 'happy'} size={116} pop float className={cheer ? 'mascot-hop' : undefined} style={{ marginBottom: 6 }} />
-      <div
-        className="reveal"
-        style={{
-          fontFamily: 'var(--mono)',
-          fontSize: 11,
-          letterSpacing: '0.2em',
-          color: 'var(--pos)',
-          textTransform: 'uppercase',
-          fontWeight: 600,
-          marginBottom: 20,
-        }}
-      >
-        // standx.com
-      </div>
-      <h1
-        className="empty-hero reveal"
-        style={{ fontSize: 42, lineHeight: 1.05, fontWeight: 800, letterSpacing: '-0.035em', margin: '0 0 22px', maxWidth: 640, animationDelay: '0.05s' }}
-      >
-        {t.emptyTitle}
-      </h1>
-
-      {/* what you'll get */}
-      <div className="reveal feature-row" style={{ marginBottom: 34, animationDelay: '0.1s' }}>
-        {t.features.map((label, i) => {
-          const Icon = featureIcons[i];
-          return (
-            <div key={i} className="feature-chip">
-              <span className="feature-chip-icon">
-                <Icon size={13} color="var(--pos)" width={2.4} />
-              </span>
-              {label}
-            </div>
-          );
-        })}
+    <div className="empty-grid" style={{ padding: '28px 0 0' }}>
+      <div className="eg-mascot">
+        <Mascot pose={cheer ? 'hype' : 'happy'} size={116} pop float className={cheer ? 'mascot-hop' : undefined} style={{ marginBottom: 6 }} />
       </div>
 
+      <div className="eg-head">
+        <div
+          className="reveal"
+          style={{
+            fontFamily: 'var(--mono)',
+            fontSize: 11,
+            letterSpacing: '0.2em',
+            color: 'var(--pos)',
+            textTransform: 'uppercase',
+            fontWeight: 600,
+            marginBottom: 20,
+          }}
+        >
+          // standx.com
+        </div>
+        <h1
+          className="empty-hero reveal"
+          style={{ fontSize: 42, lineHeight: 1.05, fontWeight: 800, letterSpacing: '-0.035em', margin: '0 0 22px', maxWidth: 640, animationDelay: '0.05s' }}
+        >
+          {t.emptyTitle}
+        </h1>
+
+        {/* what you'll get */}
+        <div className="reveal feature-row" style={{ marginBottom: 34, animationDelay: '0.1s' }}>
+          {t.features.map((label, i) => {
+            const Icon = featureIcons[i];
+            return (
+              <div key={i} className="feature-chip">
+                <span className="feature-chip-icon">
+                  <Icon size={13} color="var(--pos)" width={2.4} />
+                </span>
+                {label}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       <div
-        className="reveal card-glass"
+        className="eg-card reveal card-glass"
         style={{
           width: '100%',
-          maxWidth: 540,
           border: '1px solid var(--line)',
           borderRadius: 'var(--r-xl)',
           padding: 28,
@@ -215,8 +219,8 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
         </div>
       </div>
 
-      {/* privacy + guide */}
-      <div className="reveal" style={{ width: '100%', maxWidth: 540, marginTop: 34, animationDelay: '0.28s' }}>
+      {/* privacy + guide + referral (right column on wide screens) */}
+      <div className="eg-side reveal" style={{ width: '100%', marginTop: 34, animationDelay: '0.28s' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
           <div className="privacy-badge">
             <span>{t.privacy}</span>
@@ -304,6 +308,23 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
             </div>
           </div>
         )}
+
+        {/* friendly referral nudge */}
+        <a
+          className="referral-card"
+          href="https://standx.com/referral?code=Yhona"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Mascot pose="dance" size={30} />
+          <span className="referral-text">
+            <strong>{t.referralTitle}</strong>
+            <em>
+              {t.referralCta}
+              <IconExternalLink size={11} width={2.4} />
+            </em>
+          </span>
+        </a>
       </div>
     </div>
   );

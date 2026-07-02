@@ -757,6 +757,120 @@ a:focus-visible,
   margin-top: 7px;
 }
 
+/* ---------- empty-state layout ---------- */
+/* Mobile: single centered column (mascot → head → card → side).
+   ≥1080px: split — head+card on the left, mascot+privacy+guide+referral on
+   the right, so the wide shell's side space actually works. */
+.empty-grid {
+  display: grid;
+  grid-template-areas: 'mascot' 'head' 'card' 'side';
+  justify-items: center;
+  text-align: center;
+}
+.eg-mascot {
+  grid-area: mascot;
+}
+.eg-head {
+  grid-area: head;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.eg-card {
+  grid-area: card;
+  max-width: 540px;
+}
+.eg-side {
+  grid-area: side;
+  max-width: 540px;
+}
+@media (min-width: 1080px) {
+  .empty-grid {
+    grid-template-areas:
+      'head mascot'
+      'card side';
+    grid-template-columns: minmax(0, 1.1fr) 460px;
+    column-gap: 56px;
+    row-gap: 6px;
+    align-items: start;
+    justify-items: stretch;
+    text-align: left;
+    padding-top: 44px !important;
+  }
+  .eg-head {
+    align-items: flex-start;
+  }
+  .eg-head h1 {
+    font-size: 50px !important;
+    max-width: none !important;
+  }
+  .eg-head .feature-row {
+    justify-content: flex-start;
+  }
+  .eg-mascot {
+    justify-self: center;
+    align-self: center;
+  }
+  /* the Mascot component sets width inline; the split view earns a bigger one */
+  .eg-mascot img {
+    width: 180px !important;
+  }
+  .eg-card {
+    max-width: none;
+  }
+  .eg-card .dropzone {
+    padding: 72px 28px;
+  }
+  .eg-side {
+    max-width: none;
+    margin-top: 10px !important;
+  }
+  .eg-side .privacy-badge {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* referral nudge */
+.referral-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 13px 16px;
+  border: 1px solid rgba(0, 255, 135, 0.22);
+  border-radius: var(--r);
+  background: rgba(0, 255, 135, 0.05);
+  text-decoration: none;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+.referral-card:hover {
+  border-color: rgba(0, 255, 135, 0.45);
+  background: rgba(0, 255, 135, 0.08);
+  transform: translateY(-1px);
+}
+.referral-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.referral-text strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.referral-text em {
+  font-style: normal;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--pos);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 /* ---------- feature chips (empty state) ---------- */
 .feature-row {
   display: flex;

@@ -86,3 +86,17 @@ story format → verificación integral → commit/push por bloques.
 ## Open Questions
 
 Ninguna — 4 preguntas gate respondidas 2026-07-02.
+
+## Addendum 2026-07-02 (post-implementación)
+
+1. **Validación de exactitud (core)**: suite `npm test` permanente en
+   `app/scripts/accuracy.test.mjs` — corre los módulos reales (bundle esbuild)
+   contra 43 expectativas calculadas a mano. Además se validó una vez contra
+   los exports reales del usuario: conservación exacta vs sumas crudas del
+   JSON (net/fees/volumen/fills/taker%) y reconstrucción idéntica a una
+   implementación de referencia independiente (874 round-trips). 55/55.
+2. **Landing split** (feedback Yhona: "no moviste a la derecha"): el landing
+   quedaba en columna única — corregido con grid-areas: head+card izquierda,
+   mascota+privacidad+guía+referral derecha en ≥1080px; móvil intacto.
+3. **Referral**: tarjeta amigable en la columna derecha →
+   `https://standx.com/referral?code=Yhona` (ES/EN, target _blank noopener).
