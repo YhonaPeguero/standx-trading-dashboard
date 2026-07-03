@@ -283,7 +283,21 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
                 >
                   {i + 1}
                 </span>
-                <span style={{ fontSize: 14.5, color: 'var(--text-2)', lineHeight: 1.6 }}>{text}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                  <span style={{ fontSize: 14.5, color: 'var(--text-2)', lineHeight: 1.6 }}>{text}</span>
+                  {i === 0 && (
+                    <a
+                      href="https://x.com/RyuuDefi/status/2073071852893712804"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="guide-tool-link"
+                      style={{ fontSize: 12.5, fontWeight: 600 }}
+                    >
+                      {t.guideTokenExampleLink}
+                      <IconExternalLink size={10} width={2.4} />
+                    </a>
+                  )}
+                </div>
               </div>
             ))}
 
@@ -320,7 +334,7 @@ export default function EmptyState({ t, files, onAddFiles, onRemoveFile, onClear
 
             <div className="jwt-warning">
               <IconAlertTriangle size={16} color="#ff5c6c" width={2.2} />
-              <span>{t.guideJwtWarning}</span>
+              <span>{t.guideTokenWarning}</span>
             </div>
           </div>
         )}

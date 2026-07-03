@@ -108,10 +108,11 @@ export interface Strings {
   tradesWord: string;
   features: string[];
   guide: string[];
+  guideTokenExampleLink: string;
   guideToolTitle: string;
   guideToolBody: string;
   guideToolLink: string;
-  guideJwtWarning: string;
+  guideTokenWarning: string;
 }
 
 const es: Strings = {
@@ -225,17 +226,17 @@ const es: Strings = {
   tradesWord: 'trades',
   features: ['PnL realizado', 'Win rate', 'Card compartible'],
   guide: [
-    'En StandX, abre las herramientas de desarrollador con F12 (o clic derecho → Inspeccionar).',
-    'Ve a la pestaña "Network" y recarga tu página de historial de trades.',
-    'Busca cualquier request autenticado (por ejemplo, query_trades) y copia el valor de su header "Authorization" — ese es tu JWT_TOKEN.',
+    'En StandX, genera un nuevo Token de API para tu cuenta — configúralo como Solo lectura (deja Trade y Withdraw sin marcar) y con una expiración corta.',
+    'Copia el token generado.',
     'Con ese token, consulta la API de StandX (query_trades y query_orders) recorriendo todas las páginas de resultados, con la herramienta que prefieras.',
     'Guarda el resultado completo como .txt o .json y súbelo aquí.',
   ],
+  guideTokenExampleLink: 'Mira cómo se ve esto',
   guideToolTitle: '¿Prefieres no hacerlo a mano?',
   guideToolBody:
-    'Este script de ejemplo consulta la API por ti. Puedes revisar el código antes de usarlo, descargarlo y correrlo en tu máquina, o ejecutarlo en la nube — si usas la nube, elimina tu JWT_TOKEN del notebook cuando termines.',
+    'Este script de ejemplo consulta la API por ti. Puedes revisar el código antes de usarlo, descargarlo y correrlo en tu máquina, o ejecutarlo en la nube — si usas la nube, elimina tu token del notebook cuando termines.',
   guideToolLink: 'Ver script en Google Colab',
-  guideJwtWarning: 'Tu JWT_TOKEN es como tu contraseña: nunca lo compartas con nadie. Quien lo tenga puede entrar a tu cuenta de StandX.',
+  guideTokenWarning: 'Mantén tu Token de API en modo Solo lectura y con expiración corta, y nunca lo compartas con nadie — incluso un token limitado puede revelar tu historial de trades completo.',
 };
 
 const en: Strings = {
@@ -349,17 +350,17 @@ const en: Strings = {
   tradesWord: 'trades',
   features: ['Realized PnL', 'Win rate', 'Shareable card'],
   guide: [
-    'On StandX, open developer tools with F12 (or right-click → Inspect).',
-    'Go to the "Network" tab and reload your trade-history page.',
-    'Find any authenticated request (e.g. query_trades) and copy its "Authorization" header value — that’s your JWT_TOKEN.',
+    'In StandX, generate a new API Token for your account — set it to Read Only (leave Trade and Withdraw unchecked) with a short expiry.',
+    'Copy the generated token.',
     'Use that token to query the StandX API (query_trades and query_orders), paging through every result, with whichever tool you prefer.',
     'Save the complete result as .txt or .json and upload it here.',
   ],
+  guideTokenExampleLink: 'See what this looks like',
   guideToolTitle: 'Prefer not to do it by hand?',
   guideToolBody:
-    'This example script queries the API for you. Review the code before running it, download it and run it on your machine, or run it in the cloud — if you use the cloud, remove your JWT_TOKEN from the notebook when you’re done.',
+    'This example script queries the API for you. Review the code before running it, download it and run it on your machine, or run it in the cloud — if you use the cloud, remove your token from the notebook when you’re done.',
   guideToolLink: 'View script on Google Colab',
-  guideJwtWarning: 'Your JWT_TOKEN is like your password: never share it with anyone. Whoever has it can get into your StandX account.',
+  guideTokenWarning: 'Keep your API token Read Only and short-lived, and never share it with anyone — even a scoped token can reveal your full trade history.',
 };
 
 export function strings(lang: Lang): Strings {
