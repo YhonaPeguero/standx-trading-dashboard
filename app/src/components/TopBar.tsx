@@ -38,7 +38,15 @@ export default function TopBar({ lang, onSetLang, showDisconnect, onReset, t }: 
 
   return (
     <header
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 4 }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 16,
+        rowGap: 10,
+        flexWrap: 'wrap',
+        marginBottom: 4,
+      }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
         <div
@@ -57,13 +65,15 @@ export default function TopBar({ lang, onSetLang, showDisconnect, onReset, t }: 
         >
           <Mascot pose="mark" size={23} />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-          <span style={{ fontWeight: 800, letterSpacing: '0.01em', fontSize: 15, textTransform: 'uppercase' }}>StandX</span>
-          <span style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 500 }}>{t.brandTag}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', rowGap: 4 }}>
+          <span style={{ fontWeight: 800, letterSpacing: '0.01em', fontSize: 15, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+            {t.brandTag} <span style={{ color: 'var(--pos)' }}>{t.brandTagAccent}</span>
+          </span>
+          <span className="community-badge">{t.communityBadge}</span>
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', rowGap: 8 }}>
         <button
           type="button"
           className="tool-btn"

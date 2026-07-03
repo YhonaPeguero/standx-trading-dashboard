@@ -2,6 +2,8 @@ import type { Lang } from './types';
 
 export interface Strings {
   brandTag: string;
+  brandTagAccent: string;
+  communityBadge: string;
   emptyTitle: string;
   dropTitle: string;
   dropSub: string;
@@ -113,7 +115,9 @@ export interface Strings {
 }
 
 const es: Strings = {
-  brandTag: 'Panel de trading',
+  brandTag: 'Panel de',
+  brandTagAccent: 'trading',
+  communityBadge: 'Comunidad',
   emptyTitle: 'Sube tus datos de StandX',
   dropTitle: 'Arrastra tus archivos .txt aquí',
   dropSub: 'o haz clic para buscarlos',
@@ -235,7 +239,9 @@ const es: Strings = {
 };
 
 const en: Strings = {
-  brandTag: 'Trading panel',
+  brandTag: 'Trading',
+  brandTagAccent: 'panel',
+  communityBadge: 'Community',
   emptyTitle: 'Upload your StandX data',
   dropTitle: 'Drag & drop your .txt files',
   dropSub: 'or click to browse',

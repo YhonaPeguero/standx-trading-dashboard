@@ -973,6 +973,26 @@ a:focus-visible,
   line-height: 1.3;
 }
 
+/* topbar "community" tag — signals this is a fan-built panel, not
+   an official StandX product; same pill/mono language as the rest
+   of the app's tags (privacy-badge shape, eyebrow-text type) */
+.community-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  background: var(--pos-soft);
+  border: 1px solid rgba(0, 255, 135, 0.35);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pos);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
 /* ---------- app footer ---------- */
 .app-footer {
   display: flex;
